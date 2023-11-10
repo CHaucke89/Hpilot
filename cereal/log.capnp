@@ -1022,6 +1022,7 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
   # FrogPilot LongitudinalPlans
   conditionalExperimental @38 :Bool;
   desiredFollowDistance @39 :Float32;
+  greenLight @40 :Bool;
   safeObstacleDistance @41 :Float32;
   stoppedEquivalenceFactor @42 :Float32;
   safeObstacleDistanceStock @43 :Float32;

@@ -93,6 +93,12 @@ class LongitudinalPlanner:
     # FrogPilot variables
     self.is_metric = self.params.get_bool("IsMetric")
 
+    self.green_light = False
+    self.previously_driving = False
+    self.stopped_for_light_previously = False
+
+    self.green_light_count = 0
+
   def read_param(self):
     try:
       self.personality = int(self.params.get('LongitudinalPersonality'))
@@ -170,6 +176,27 @@ class LongitudinalPlanner:
     if self.conditional_experimental_mode and sm['controlsState'].enabled:
       ConditionalExperimentalMode.update(carstate, modeldata, radarstate, v_ego, v_lead)
 
+    # Green light alert
+    if self.green_light_alert:
+      lead = ConditionalExperimentalMode.detect_lead(radarstate)
+      standstill = carstate.standstill
+
+      self.previously_driving |= not standstill
+      self.previously_driving &= sm['carControl'].drivingGear
+
+      stopped_for_light = ConditionalExperimentalMode.stop_sign_and_light(carstate, lead, radarstate.leadOne.dRel, modeldata, v_ego, v_lead) and standstill
+
+      self.green_light_count += 1 if not stopped_for_light and self.stopped_for_light_previously else -1
+      self.green_light_count = np.clip(self.green_light_count, 0, 10)
+
+      # Only trigger the alert if the green light is detected for 0.5 seconds
+      self.green_light = self.green_light_count >= 10 and self.previously_driving and not lead
+      # Reset the counter when the green light alert is triggered
+      self.green_light_count *= not self.green_light
+
+      self.stopped_for_light_previously |= stopped_for_light
+      self.stopped_for_light_previously &= not self.green_light
+
     self.mpc.set_weights(prev_accel_constraint, self.custom_personalities, self.aggressive_jerk, self.standard_jerk, self.relaxed_jerk, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
@@ -218,6 +245,7 @@ class LongitudinalPlanner:
 
     # FrogPilot longitudinalPlan variables
     longitudinalPlan.conditionalExperimental = ConditionalExperimentalMode.experimental_mode
+    longitudinalPlan.greenLight = bool(self.green_light)
     # LongitudinalPlan variables for onroad driving insights
     longitudinalPlan.safeObstacleDistance = self.mpc.safe_obstacle_distance
     longitudinalPlan.stoppedEquivalenceFactor = self.mpc.stopped_equivalence_factor
@@ -243,3 +271,5 @@ class LongitudinalPlanner:
     self.aggressive_jerk = self.params.get_int("AggressiveJerk") / 10
     self.standard_jerk = self.params.get_int("StandardJerk") / 10
     self.relaxed_jerk = self.params.get_int("RelaxedJerk") / 10
+
+    self.green_light_alert = self.params.get_bool("GreenLightAlert")
