@@ -286,6 +286,12 @@ ParamController(StandardFollow, "StandardFollow", "Time", "Set the following dis
   return std::clamp(v, 10, 50);
 )
 
+ParamController(StoppingDistance, "StoppingDistance", "   Increase Stopping Distance", "Increase the stopping distance for a more comfortable stop.", "../assets/offroad/icon_blank.png",
+  const int distance = params.getInt("StoppingDistance");
+  return distance == 0 ? "Off" : QString::number(distance) + (isMetric ? " meters" : " feet");,
+  return std::clamp(v, 0, isMetric ? 5 : 15);
+)
+
 ParamController(WheelIcon, "WheelIcon", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_openpilot.png",
   const int wheel = params.getInt("WheelIcon");
   return wheel == 0 ? "Stock" : wheel == 1 ? "Lexus" : wheel == 2 ? "Toyota" : wheel == 3 ? "Frog" : wheel == 4 ? "Rocket" : wheel == 5 ? "Hyundai" : "Stalin";,
