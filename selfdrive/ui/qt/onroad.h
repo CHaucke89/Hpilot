@@ -56,6 +56,8 @@ private:
 
   // FrogPilot variables
   bool leadInfo;
+  int wheelIcon;
+  std::map<int, QPixmap> wheelImages;
 
 };
 

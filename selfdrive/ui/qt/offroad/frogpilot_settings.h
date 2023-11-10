@@ -255,3 +255,9 @@ ParamController(StandardFollow, "StandardFollow", "Time", "Set the following dis
   return QString::number(params.getInt("StandardFollow") / 10.0) + " sec";,
   return std::clamp(v, 10, 50);
 )
+
+ParamController(WheelIcon, "WheelIcon", "Steering Wheel Icon", "Replace the stock openpilot steering wheel icon with a custom icon.\n\nWant to submit your own steering wheel? Post it in the 'feature-request' channel on the FrogPilot Discord!", "../assets/offroad/icon_openpilot.png",
+  const int wheel = params.getInt("WheelIcon");
+  return wheel == 0 ? "Stock" : wheel == 1 ? "Lexus" : wheel == 2 ? "Toyota" : wheel == 3 ? "Frog" : wheel == 4 ? "Rocket" : wheel == 5 ? "Hyundai" : "Stalin";,
+  return v >= 0 ? v % 7 : 6;
+)
