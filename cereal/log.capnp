@@ -320,6 +320,8 @@ struct DeviceState @0xa4d8b5af2aa492eb {
   memoryUsagePercent @19 :Int8;
   gpuUsagePercent @33 :Int8;
   cpuUsagePercent @34 :List(Int8);  # per-core cpu usage
+  freeSpace @45 :Int16;
+  usedSpace @46 :Int16;
 
   # power
   offroadPowerUsageUwh @23 :UInt32;
@@ -1019,6 +1021,11 @@ struct LongitudinalPlan @0xe00b5b3eba12876c {
 
   # FrogPilot LongitudinalPlans
   conditionalExperimental @38 :Bool;
+  desiredFollowDistance @39 :Float32;
+  safeObstacleDistance @41 :Float32;
+  stoppedEquivalenceFactor @42 :Float32;
+  safeObstacleDistanceStock @43 :Float32;
+  stoppedEquivalenceFactorStock @47 :Float32;
 
   enum LongitudinalPlanSource {
     cruise @0;
@@ -1092,6 +1099,8 @@ struct LateralPlan @0xe1e9318e2ae8b51e {
   solverState @33 :SolverState;
 
   # FrogPilot LateralPlans
+  laneWidthLeft @34 :Float32;
+  laneWidthRight @35 :Float32;
 
   struct SolverState {
     x @0 :List(List(Float32));

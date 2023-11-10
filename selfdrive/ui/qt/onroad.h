@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include <QElapsedTimer>
 #include <QPushButton>
 #include <QStackedLayout>
 #include <QWidget>
@@ -15,6 +16,7 @@ const int btn_size = 192;
 const int img_size = (btn_size / 4) * 3;
 
 // FrogPilot global variables
+static double fps;
 
 
 // ***** onroad widgets *****
@@ -53,6 +55,7 @@ private:
   bool engageable;
 
   // FrogPilot variables
+  bool leadInfo;
 
 };
 
@@ -85,6 +88,7 @@ private:
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);
 
   // FrogPilot widgets
+  void drawLeadInfo(QPainter &p);
   void drawStatusBar(QPainter &p);
 
   QVBoxLayout *main_layout;
@@ -113,9 +117,22 @@ private:
   Params params;
   Params paramsMemory{"/dev/shm/params"};
   const UIScene &scene;
+  bool accelerationPath;
+  bool adjacentPath;
   bool alwaysOnLateral;
+  bool blindSpotLeft;
+  bool blindSpotRight;
   bool conditionalExperimental;
   bool experimentalMode;
+  bool leadInfo;
+  double maxAcceleration;
+  float desiredFollow;
+  float laneWidthLeft;
+  float laneWidthRight;
+  float obstacleDistance;
+  float obstacleDistanceStock;
+  float stoppedEquivalence;
+  float stoppedEquivalenceStock;
   int conditionalSpeed;
   int conditionalSpeedLead;
   int conditionalStatus;
@@ -162,6 +179,8 @@ private:
   Params params;
   Params paramsMemory{"/dev/shm/params"};
   const UIScene &scene;
+  QPoint timeoutPoint = QPoint(420, 69);
+  QTimer clickTimer;
 
 private slots:
   void offroadTransition(bool offroad);
