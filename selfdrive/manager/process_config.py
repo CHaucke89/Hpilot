@@ -57,6 +57,9 @@ def enable_dm(started, params, CP: car.CarParams) -> bool:
 def enable_logging(started, params, CP: car.CarParams) -> bool:
   return not params_memory.get_bool("NoLogging")
 
+def not_prime(started, params, CP: car.CarParams) -> bool:
+  return params.get_int("PrimeType") == 0
+
 procs = [
   DaemonProcess("manage_athenad", "selfdrive.athena.manage_athenad", "AthenadPid"),
 
@@ -103,6 +106,7 @@ procs = [
   PythonProcess("webjoystick", "tools.bodyteleop.web", notcar),
 
   # FrogPilot procs
+  PythonProcess("otisserv", "selfdrive.navd.otisserv", not_prime),
 ]
 
 managed_processes = {p.name: p for p in procs}
