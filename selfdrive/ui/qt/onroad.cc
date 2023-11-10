@@ -532,6 +532,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   muteDM = scene.mute_dm;
   obstacleDistance = scene.obstacle_distance;
   obstacleDistanceStock = scene.obstacle_distance_stock;
+  roadNameUI = scene.road_name_ui;
   showDriverCamera = scene.show_driver_camera;
   stoppedEquivalence = scene.stopped_equivalence;
   stoppedEquivalenceStock = scene.stopped_equivalence_stock;
@@ -1349,6 +1350,7 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
   constexpr qreal fadeDuration = 1500.0;  // 1.5 seconds
   constexpr qreal textDuration = 5000.0;  // 5 seconds
 
+  const QString roadName = roadNameUI ? QString::fromStdString(paramsMemory.get("RoadName")) : QString();
   const QString screenSuffix = ". Double tap the screen to revert";
   const QString wheelSuffix = ". Double press the \"LKAS\" button to revert";
 
@@ -1377,8 +1379,8 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
     newStatus = conditionalStatusMap.contains(conditionalStatus) && status != STATUS_DISENGAGED ? conditionalStatusMap[conditionalStatus] : conditionalStatusMap[0];
   }
 
-  // Check if status has changed
-  if (newStatus != lastShownStatus) {
+  // Check if status has changed or if the road name is empty
+  if (newStatus != lastShownStatus || roadName.isEmpty()) {
     displayStatusText = true;
     lastShownStatus = newStatus;
     timer.restart();
@@ -1390,10 +1392,15 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
   }
 
   // Calculate opacities
+  qreal roadNameOpacity;
   qreal statusTextOpacity;
   const int elapsed = timer.elapsed();
   if (displayStatusText) {
     statusTextOpacity = qBound(0.0, 1.0 - (elapsed - textDuration) / fadeDuration, 1.0);
+    roadNameOpacity = 1.0 - statusTextOpacity;
+  } else {
+    roadNameOpacity = qBound(0.0, elapsed / fadeDuration, 1.0);
+    statusTextOpacity = 1.0 - roadNameOpacity;
   }
 
   // Draw status bar
@@ -1413,6 +1420,14 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
   QRect textRect = p.fontMetrics().boundingRect(statusBarRect, Qt::AlignCenter | Qt::TextWordWrap, newStatus);
   textRect.moveBottom(statusBarRect.bottom() - 50);
   p.drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, newStatus);
+
+  // Draw the road name with the calculated opacity
+  if (!roadName.isEmpty()) {
+    p.setOpacity(roadNameOpacity);
+    textRect = p.fontMetrics().boundingRect(statusBarRect, Qt::AlignCenter | Qt::TextWordWrap, roadName);
+    textRect.moveBottom(statusBarRect.bottom() - 50);
+    p.drawText(textRect, Qt::AlignCenter | Qt::TextWordWrap, roadName);
+  }
 
   p.restore();
 }
