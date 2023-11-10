@@ -177,6 +177,7 @@ private:
   float slcSpeedLimitOffset;
   float stoppedEquivalence;
   float stoppedEquivalenceStock;
+  float vtscOffset;
   int bearingDeg;
   int conditionalSpeed;
   int conditionalSpeedLead;
