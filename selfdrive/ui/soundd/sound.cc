@@ -67,13 +67,15 @@ void Sound::updateFrogPilotParams() {
   const bool isCustomTheme = params.getBool("CustomTheme");
   const int customSounds = isCustomTheme ? params.getInt("CustomSounds") : 0;
 
+  const bool isSilentMode = params.getBool("SilentMode");
+
   for (auto &[alert, fn, loops, volume] : sound_list) {
     QSoundEffect *s = new QSoundEffect(this);
     QObject::connect(s, &QSoundEffect::statusChanged, [=]() {
       assert(s->status() != QSoundEffect::Error);
     });
     s->setSource(QUrl::fromLocalFile(soundPaths[customSounds] + "/" + fn));
-    s->setVolume(volume);
+    s->setVolume(isSilentMode ? 0 : volume);
     sounds[alert] = {s, loops};
   }
 }
