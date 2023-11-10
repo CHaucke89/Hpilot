@@ -251,6 +251,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LeadInfo", PERSISTENT},
     {"LockDoors", PERSISTENT},
     {"LongitudinalTune", PERSISTENT},
+    {"LowerVolt", PERSISTENT},
     {"MapOpen", PERSISTENT},
     {"MuteDM", PERSISTENT},
     {"MuteDoor", PERSISTENT},
