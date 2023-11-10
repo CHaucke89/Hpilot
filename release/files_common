@@ -354,6 +354,7 @@ selfdrive/manager/test/test_manager.py
 selfdrive/modeld/.gitignore
 selfdrive/modeld/__init__.py
 selfdrive/modeld/SConscript
+selfdrive/modeld/model_switcher.py
 selfdrive/modeld/modeld.py
 selfdrive/modeld/parse_model_outputs.py
 selfdrive/modeld/fill_model_msg.py

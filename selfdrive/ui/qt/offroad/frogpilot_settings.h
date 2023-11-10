@@ -176,6 +176,10 @@ private: \
     value = newValue(value + delta); \
     params.putIntNonBlocking(paramName, value); \
     paramsMemory.putBoolNonBlocking("FrogPilotTogglesUpdated", true); \
+    if (std::string(#className) == "Model") { \
+      params.remove("CalibrationParams"); \
+      params.remove("LiveTorqueParameters"); \
+    } \
     refresh(); \
   } \
   QString getValueStr() { getValueStrFunc; } \
@@ -243,6 +247,12 @@ ParamController(DeviceShutdown, "DeviceShutdown", "Device Shutdown Timer", "Set 
 ParamController(LaneLinesWidth, "LaneLinesWidth", "Lanes", "Customize the lane line width.\n\nDefault matches the MUTCD average of 4 inches.", "../assets/offroad/icon_blank.png",
   return QString::number(params.getInt("LaneLinesWidth")) + (isMetric ? " cm" : " in");,
   return std::clamp(v, 0, isMetric ? 60 : 24);
+)
+
+ParamController(Model, "Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nFV = Farmville(Default)\nNLP = New Lemon Pie", "../assets/offroad/icon_calibration.png",
+  const int model = params.getInt("Model");
+  return model == 0 ? "FV" : "NLP";,
+  return v >= 0 ? v % 2 : 1;
 )
 
 ParamController(PathEdgeWidth, "PathEdgeWidth", "Path Edges", "Customize the path edge width that displays current driving statuses.\n\nDefault is 20% of the total path.\n\nBlue = Navigation\nLight Blue = Always On Lateral\nGreen = Default with 'FrogPilot Colors'\nLight Green = Default with stock colors\nOrange = Experimental Mode Active\nYellow = Conditional Overriden", "../assets/offroad/icon_blank.png",

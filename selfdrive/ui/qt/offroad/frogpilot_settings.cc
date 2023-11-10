@@ -21,6 +21,7 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel
     {"FireTheBabysitter", "Fire the Babysitter", "Disable some of openpilot's 'Babysitter Protocols'.", "../assets/offroad/icon_babysitter.png"},
     {"LateralTune", "Lateral Tuning", "Change the way openpilot steers.", "../assets/offroad/icon_lateral_tune.png"},
     {"LongitudinalTune", "Longitudinal Tuning", "Change the way openpilot accelerates and brakes.", "../assets/offroad/icon_longitudinal_tune.png"},
+    {"Model", "Model Selector (Requires Reboot)", "Select your preferred openpilot model.\n\nFV = Farmville(Default)\nNLP = New Lemon Pie", "../assets/offroad/icon_calibration.png"},
   };
 
   for (const auto &[key, label, desc, icon] : toggles) {
@@ -73,6 +74,9 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(QWidget *parent) : FrogPilotPanel
       }, {
         {"AggressiveAcceleration", "Aggressive Acceleration With Lead", "Accelerate more aggressively behind a lead when starting from a stop."},
       });
+    } else if (key == "Model") {
+      mainLayout->addWidget(new Model());
+      mainLayout->addWidget(horizontalLine());
     } else {
       mainLayout->addWidget(control);
       if (key != std::get<0>(toggles.back())) mainLayout->addWidget(horizontalLine());
@@ -339,6 +343,10 @@ void FrogPilotPanel::setInitialToggleStates() {
 }
 
 void FrogPilotPanel::setParams() {
+  if (!std::filesystem::exists("/data/openpilot/selfdrive/modeld/models/supercombo.thneed")) {
+    params.putBool("DoReboot", true);
+  }
+
   if (params.getBool("DisableOnroadUploads")) {
     paramsMemory.putBool("DisableOnroadUploads", true);
   }
