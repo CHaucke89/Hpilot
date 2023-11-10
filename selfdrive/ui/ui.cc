@@ -314,6 +314,7 @@ void ui_update_params(UIState *s) {
   scene.rotating_wheel = params.getBool("RotatingWheel");
   scene.screen_brightness = params.getInt("ScreenBrightness");
   scene.wheel_icon = params.getInt("WheelIcon");
+  scene.wide_camera_disabled = params.getBool("WideCameraOff");
 }
 
 void UIState::updateStatus() {
