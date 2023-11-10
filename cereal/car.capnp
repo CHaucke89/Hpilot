@@ -118,6 +118,8 @@ struct CarEvent @0x9b1657f34caf3ad3 {
     paramsdTemporaryError @50;
     paramsdPermanentError @119;
 
+    # FrogPilot Events
+
     radarCanErrorDEPRECATED @15;
     communityFeatureDisallowedDEPRECATED @62;
     radarCommIssueDEPRECATED @67;
@@ -325,6 +327,9 @@ struct CarControl {
 
   leftBlinker @15: Bool;
   rightBlinker @16: Bool;
+
+  # FrogPilot CarControls
+  drivingGear @18: Bool;
 
   # Any car specific rate limits or quirks applied by
   # the CarController are reflected in actuatorsOutput

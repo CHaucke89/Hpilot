@@ -65,6 +65,9 @@ class LongitudinalPlanner:
     self.read_param()
     self.personality = log.LongitudinalPersonality.standard
 
+    # FrogPilot variables
+    self.is_metric = self.params.get_bool("IsMetric")
+
   def read_param(self):
     try:
       self.personality = int(self.params.get('LongitudinalPersonality'))
@@ -129,6 +132,8 @@ class LongitudinalPlanner:
     accel_limits_turns[0] = min(accel_limits_turns[0], self.a_desired + 0.05)
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
+    carstate, modeldata, radarstate = sm['carState'], sm['modelV2'], sm['radarState']
+
     self.mpc.set_weights(prev_accel_constraint, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
     self.mpc.set_cur_state(self.v_desired_filter.x, self.a_desired)
@@ -172,3 +177,6 @@ class LongitudinalPlanner:
     longitudinalPlan.personality = self.personality
 
     pm.send('longitudinalPlan', plan_send)
+    
+  def update_frogpilot_params(self):
+    self.longitudinal_tune = self.params.get_bool("LongitudinalTune")

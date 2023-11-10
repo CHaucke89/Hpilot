@@ -27,6 +27,8 @@ class LateralPlanner:
 
     self.debug_mode = debug
 
+    # FrogPilot variables
+
   def update(self, sm):
     v_ego_car = sm['carState'].vEgo
 
@@ -46,7 +48,7 @@ class LateralPlanner:
       self.l_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeLeft]
       self.r_lane_change_prob = desire_state[log.LateralPlan.Desire.laneChangeRight]
     lane_change_prob = self.l_lane_change_prob + self.r_lane_change_prob
-    self.DH.update(sm['carState'], sm['carControl'].latActive, lane_change_prob)
+    self.DH.update(sm['carState'], md, sm['carControl'].latActive, lane_change_prob)
 
   def publish(self, sm, pm):
     plan_send = messaging.new_message('lateralPlan')
@@ -71,4 +73,9 @@ class LateralPlanner:
     lateralPlan.laneChangeState = self.DH.lane_change_state
     lateralPlan.laneChangeDirection = self.DH.lane_change_direction
 
+    # FrogPilot lateral variables
+
     pm.send('lateralPlan', plan_send)
+
+  def update_frogpilot_params(self, params):
+    self.DH.update_frogpilot_params(params)

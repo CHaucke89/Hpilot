@@ -14,6 +14,8 @@
 const int btn_size = 192;
 const int img_size = (btn_size / 4) * 3;
 
+// FrogPilot global variables
+
 
 // ***** onroad widgets *****
 class OnroadAlerts : public QWidget {
@@ -43,10 +45,15 @@ private:
   void changeMode();
 
   Params params;
+  Params paramsMemory{"/dev/shm/params"};
+  const UIScene &scene;
   QPixmap engage_img;
   QPixmap experimental_img;
   bool experimental_mode;
   bool engageable;
+
+  // FrogPilot variables
+
 };
 
 
@@ -55,10 +62,12 @@ class MapSettingsButton : public QPushButton {
 
 public:
   explicit MapSettingsButton(QWidget *parent = 0);
+  void updateState(const UIState &s);
 
 private:
   void paintEvent(QPaintEvent *event) override;
 
+  const UIScene &scene;
   QPixmap settings_img;
 };
 
@@ -74,6 +83,9 @@ public:
 
 private:
   void drawText(QPainter &p, int x, int y, const QString &text, int alpha = 255);
+
+  // FrogPilot widgets
+  void drawStatusBar(QPainter &p);
 
   QVBoxLayout *main_layout;
   ExperimentalButton *experimental_btn;
@@ -96,6 +108,12 @@ private:
 
   int skip_frame_count = 0;
   bool wide_cam_requested = false;
+
+  // FrogPilot variables
+  Params params;
+  Params paramsMemory{"/dev/shm/params"};
+  const UIScene &scene;
+  bool experimentalMode;
 
 protected:
   void paintGL() override;
@@ -134,6 +152,11 @@ private:
   QColor bg = bg_colors[STATUS_DISENGAGED];
   QWidget *map = nullptr;
   QHBoxLayout* split;
+
+  // FrogPilot variables
+  Params params;
+  Params paramsMemory{"/dev/shm/params"};
+  const UIScene &scene;
 
 private slots:
   void offroadTransition(bool offroad);

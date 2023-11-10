@@ -5,6 +5,8 @@ from openpilot.common.params import Params
 from openpilot.system.hardware import PC, TICI
 from openpilot.selfdrive.manager.process import PythonProcess, NativeProcess, DaemonProcess
 
+params_memory = Params("/dev/shm/params")
+
 WEBCAM = os.getenv("USE_WEBCAM") is not None
 
 def driverview(started: bool, params: Params, CP: car.CarParams) -> bool:
@@ -40,6 +42,8 @@ def only_onroad(started: bool, params, CP: car.CarParams) -> bool:
 
 def only_offroad(started, params, CP: car.CarParams) -> bool:
   return not started
+
+# FrogPilot functions
 
 procs = [
   DaemonProcess("manage_athenad", "selfdrive.athena.manage_athenad", "AthenadPid"),
@@ -85,6 +89,8 @@ procs = [
   # debug procs
   NativeProcess("bridge", "cereal/messaging", ["./bridge"], notcar),
   PythonProcess("webjoystick", "tools.bodyteleop.web", notcar),
+
+  # FrogPilot procs
 ]
 
 managed_processes = {p.name: p for p in procs}

@@ -15,6 +15,8 @@
 Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
   qInfo() << "default audio device: " << QAudioDeviceInfo::defaultOutputDevice().deviceName();
 
+  // FrogPilot variables
+
   for (auto &[alert, fn, loops, volume] : sound_list) {
     QSoundEffect *s = new QSoundEffect(this);
     QObject::connect(s, &QSoundEffect::statusChanged, [=]() {
@@ -27,7 +29,10 @@ Sound::Sound(QObject *parent) : sm({"controlsState", "microphone"}) {
 
   QTimer *timer = new QTimer(this);
   QObject::connect(timer, &QTimer::timeout, this, &Sound::update);
+  QObject::connect(uiState(), &UIState::uiUpdateFrogPilotParams, this, &Sound::updateFrogPilotParams);
   timer->start(1000 / UI_FREQ);
+
+  updateFrogPilotParams();
 }
 
 void Sound::update() {
@@ -44,6 +49,10 @@ void Sound::update() {
   }
 
   setAlert(Alert::get(sm, 0));
+}
+
+void Sound::updateFrogPilotParams() {
+  // Update FrogPilot parameters upon toggle change
 }
 
 void Sound::setAlert(const Alert &alert) {
