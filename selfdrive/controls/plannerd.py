@@ -6,6 +6,7 @@ from openpilot.common.params import Params
 from openpilot.common.realtime import Priority, config_realtime_process
 from openpilot.system.swaglog import cloudlog
 from openpilot.selfdrive.modeld.constants import ModelConstants
+from openpilot.selfdrive.controls.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.selfdrive.controls.lib.longitudinal_planner import LongitudinalPlanner
 from openpilot.selfdrive.controls.lib.lateral_planner import LateralPlanner
 import cereal.messaging as messaging
@@ -60,6 +61,7 @@ def plannerd_thread():
       publish_ui_plan(sm, pm, lateral_planner, longitudinal_planner)
 
     if params_memory.get_bool("FrogPilotTogglesUpdated"):
+      ConditionalExperimentalMode.update_frogpilot_params()
       lateral_planner.update_frogpilot_params(params)
       longitudinal_planner.update_frogpilot_params()
 

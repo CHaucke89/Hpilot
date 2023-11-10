@@ -114,7 +114,11 @@ private:
   Params paramsMemory{"/dev/shm/params"};
   const UIScene &scene;
   bool alwaysOnLateral;
+  bool conditionalExperimental;
   bool experimentalMode;
+  int conditionalSpeed;
+  int conditionalSpeedLead;
+  int conditionalStatus;
 
 protected:
   void paintGL() override;

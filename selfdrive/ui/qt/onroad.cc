@@ -352,6 +352,10 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
 
   // FrogPilot variables
   alwaysOnLateral = scene.always_on_lateral_active;
+  conditionalExperimental = scene.conditional_experimental;
+  conditionalSpeed = scene.conditional_speed;
+  conditionalSpeedLead = scene.conditional_speed_lead;
+  conditionalStatus = scene.conditional_status;
   experimentalMode = scene.experimental_mode;
 }
 
@@ -745,10 +749,29 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
   constexpr qreal fadeDuration = 1500.0;  // 1.5 seconds
   constexpr qreal textDuration = 5000.0;  // 5 seconds
 
+  // Conditional Experimental Mode statuses
+  static const QMap<int, QString> conditionalStatusMap = {
+    {0, "Conditional Experimental Mode ready"},
+    {1, "Conditional Experimental overridden"},
+    {2, "Experimental Mode manually activated"},
+    {3, "Conditional Experimental overridden"},
+    {4, "Experimental Mode manually activated"},
+    {5, "Experimental Mode activated for navigation" + (QString(" instructions input"))},
+    {6, "Experimental Mode activated due to" + (QString(" no speed limit set"))},
+    {7, "Experimental Mode activated due to" + (" speed being less than " + QString::number(conditionalSpeedLead) + (is_metric ? " kph" : " mph"))},
+    {8, "Experimental Mode activated due to" + (" speed being less than " + QString::number(conditionalSpeed) + (is_metric ? " kph" : " mph"))},
+    {9, "Experimental Mode activated for slower lead"},
+    {10, "Experimental Mode activated for turn" + (QString(" / lane change"))},
+    {11, "Experimental Mode activated for stop" + (QString(" sign / stop light"))},
+    {12, "Experimental Mode activated for curve"}
+  };
+
   // Display the appropriate status
   QString newStatus;
   if (alwaysOnLateral) {
     newStatus = QString("Always On Lateral active") + (". Press the \"Cruise Control\" button to disable");
+  } else if (conditionalExperimental) {
+    newStatus = conditionalStatusMap.contains(conditionalStatus) && status != STATUS_DISENGAGED ? conditionalStatusMap[conditionalStatus] : conditionalStatusMap[0];
   }
 
   // Check if status has changed

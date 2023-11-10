@@ -11,6 +11,7 @@ from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.realtime import DT_MDL
 from openpilot.selfdrive.modeld.constants import ModelConstants
 from openpilot.selfdrive.car.interfaces import ACCEL_MIN, ACCEL_MAX
+from openpilot.selfdrive.controls.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.selfdrive.controls.lib.longcontrol import LongCtrlState
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import LongitudinalMpc
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import T_IDXS as T_IDXS_MPC
@@ -121,6 +122,7 @@ class LongitudinalPlanner:
     self.mpc.mode = 'blended' if sm['controlsState'].experimentalMode else 'acc'
 
     v_ego = sm['carState'].vEgo
+    v_lead = sm['radarState'].leadOne.vLead
     v_cruise_kph = min(sm['controlsState'].vCruise, V_CRUISE_MAX)
     v_cruise = v_cruise_kph * CV.KPH_TO_MS
 
@@ -162,6 +164,10 @@ class LongitudinalPlanner:
     accel_limits_turns[1] = max(accel_limits_turns[1], self.a_desired - 0.05)
 
     carstate, modeldata, radarstate = sm['carState'], sm['modelV2'], sm['radarState']
+
+    # Conditional Experimental Mode
+    if self.conditional_experimental_mode and sm['controlsState'].enabled:
+      ConditionalExperimentalMode.update(carstate, modeldata, radarstate, v_ego, v_lead)
 
     self.mpc.set_weights(prev_accel_constraint, personality=self.personality)
     self.mpc.set_accel_limits(accel_limits_turns[0], accel_limits_turns[1])
@@ -208,9 +214,16 @@ class LongitudinalPlanner:
     longitudinalPlan.solverExecutionTime = self.mpc.solve_time
     longitudinalPlan.personality = self.personality
 
+    # FrogPilot longitudinalPlan variables
+    longitudinalPlan.conditionalExperimental = ConditionalExperimentalMode.experimental_mode
+
     pm.send('longitudinalPlan', plan_send)
     
   def update_frogpilot_params(self):
     self.longitudinal_tune = self.params.get_bool("LongitudinalTune")
     self.acceleration_profile = self.params.get_int("AccelerationProfile") if self.longitudinal_tune else 2
     self.aggressive_acceleration = self.params.get_bool("AggressiveAcceleration") and self.longitudinal_tune
+
+    self.conditional_experimental_mode = self.params.get_bool("ConditionalExperimental")
+    if self.conditional_experimental_mode:
+      self.params.put_bool("ExperimentalMode", True)
