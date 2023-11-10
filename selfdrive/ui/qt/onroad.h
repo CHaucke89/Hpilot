@@ -129,6 +129,7 @@ private:
   bool experimentalMode;
   bool leadInfo;
   bool mapOpen;
+  bool muteDM;
   bool showDriverCamera;
   bool turnSignalLeft;
   bool turnSignalRight;
