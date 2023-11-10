@@ -243,6 +243,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LateralTune", PERSISTENT},
     {"LeadInfo", PERSISTENT},
     {"LongitudinalTune", PERSISTENT},
+    {"MapOpen", PERSISTENT},
     {"NavigationConditionMet", PERSISTENT},
     {"OfflineMode", PERSISTENT},
     {"PathEdgeWidth", PERSISTENT},
