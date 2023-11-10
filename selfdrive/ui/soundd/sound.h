@@ -45,4 +45,5 @@ protected:
 
   // FrogPilot variables
   Params params;
+  std::unordered_map<int, QString> soundPaths;
 };
