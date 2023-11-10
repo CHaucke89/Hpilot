@@ -251,7 +251,7 @@ void ExperimentalButton::updateState(const UIState &s) {
 void ExperimentalButton::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   QPixmap img = experimental_mode ? experimental_img : engage_img;
-  drawIcon(p, QPoint(btn_size / 2, btn_size / 2), img, QColor(0, 0, 0, 166), (isDown() || !engageable) ? 0.6 : 1.0);
+  drawIcon(p, QPoint(btn_size / 2, btn_size / 2), img, QColor(0, 0, 0, 166), (isDown() || (!engageable && !scene.always_on_lateral_active)) ? 0.6 : 1.0);
 }
 
 
@@ -351,6 +351,7 @@ void AnnotatedCameraWidget::updateState(const UIState &s) {
   }
 
   // FrogPilot variables
+  alwaysOnLateral = scene.always_on_lateral_active;
   experimentalMode = scene.experimental_mode;
 }
 
@@ -746,6 +747,9 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
 
   // Display the appropriate status
   QString newStatus;
+  if (alwaysOnLateral) {
+    newStatus = QString("Always On Lateral active") + (". Press the \"Cruise Control\" button to disable");
+  }
 
   // Check if status has changed
   if (newStatus != lastShownStatus) {

@@ -113,6 +113,7 @@ private:
   Params params;
   Params paramsMemory{"/dev/shm/params"};
   const UIScene &scene;
+  bool alwaysOnLateral;
   bool experimentalMode;
 
 protected:
