@@ -10,13 +10,14 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.locationd.calibrationd import MIN_SPEED_FILTER
 from openpilot.system.version import get_short_branch
+from openpilot.common.params import Params
 
 AlertSize = log.ControlsState.AlertSize
 AlertStatus = log.ControlsState.AlertStatus
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 EventName = car.CarEvent.EventName
-
+Offset = Params().get("SpeedLimitValueOffset", encoding="utf-8")
 
 # Alert priorities
 class Priority(IntEnum):
@@ -228,7 +229,7 @@ def startup_master_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
   if "REPLAY" in os.environ:
     branch = "replay"
 
-  return StartupAlert("WARNING: This branch is not tested", branch, alert_status=AlertStatus.userPrompt)
+  return StartupAlert("Current branch:", branch, alert_status=AlertStatus.userPrompt)
 
 def below_engage_speed_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubMaster, metric: bool, soft_disable_time: int) -> Alert:
   return NoEntryAlert(f"Drive above {get_display_speed(CP.minEnableSpeed, metric)} to engage")
@@ -277,7 +278,7 @@ def torque_nn_load_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
       "NN Lateral Controller Loaded",
       alert_text_2,
       alert_status, alert_size,
-      Priority.LOW, VisualAlert.none, audible_alert, 6.0)
+      Priority.LOW, VisualAlert.none, audible_alert, 3.0)
 
 # *** debug alerts ***
 
@@ -577,7 +578,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.laneChangeRoadEdge: {
     ET.WARNING: Alert(
-      "Lane Change Unavailable: Road Edge",
+      "No Lane to Change to!",
       "",
       AlertStatus.userPrompt, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.prompt, .1),
@@ -593,18 +594,18 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.manualSteeringRequired: {
     ET.WARNING: Alert(
-      "Automatic Lane Centering is OFF",
-      "Manual Steering Required",
+      "Lateral Control Turned Off",
+      "Steer Manually",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.disengage, 1.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.disengage, 2.),
   },
 
   EventName.manualLongitudinalRequired: {
     ET.WARNING: Alert(
-      "Smart/Adaptive Cruise Control is OFF",
-      "Manual Gas/Brakes Required",
+      "SCC Turned Off",
+      "Accelerate & Brake Manually",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 2.),
   },
 
   EventName.cruiseEngageBlocked: {
@@ -617,10 +618,10 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.steerSaturated: {
     ET.WARNING: Alert(
-      "Take Control",
-      "Turn Exceeds Steering Limit",
-      AlertStatus.userPrompt, AlertSize.mid,
-      Priority.LOW, VisualAlert.steerRequired, AudibleAlert.promptRepeat, 2.),
+      "Need Some Help!",
+      "",
+      AlertStatus.userPrompt, AlertSize.small,
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1.),
   },
 
   # Thrown when the fan is driven at >50% but is not rotating
@@ -678,7 +679,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.speedLimitActive: {
     ET.WARNING: Alert(
-      "Set speed changed to match posted speed limit",
+      f"Changing Set Speed to Speed Limit +{Offset}% Offset",
       "",
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 3.),
@@ -902,13 +903,13 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   },
 
   EventName.doorOpen: {
-    ET.SOFT_DISABLE: user_soft_disable_alert("Door Open"),
-    ET.NO_ENTRY: NoEntryAlert("Door Open"),
+    ET.SOFT_DISABLE: user_soft_disable_alert("Close the Door!"),
+    ET.NO_ENTRY: NoEntryAlert("Close the Door!"),
   },
 
   EventName.seatbeltNotLatched: {
-    ET.SOFT_DISABLE: user_soft_disable_alert("Seatbelt Unlatched"),
-    ET.NO_ENTRY: NoEntryAlert("Seatbelt Unlatched"),
+    ET.SOFT_DISABLE: user_soft_disable_alert("Put Your Seatbelt On!"),
+    ET.NO_ENTRY: NoEntryAlert("Put Your Seatbelt On!"),
   },
 
   EventName.espDisabled: {

@@ -91,6 +91,10 @@ procs = [
   PythonProcess("otisserv", "selfdrive.navd.otisserv", always_run),
   PythonProcess("fleet_manager", "system.fleetmanager.fleet_manager", always_run),
 
+  # PFEIFER - OPWEBGO {{
+  PythonProcess("opwebd", "selfdrive.opwebd", always_run),
+  # }} PFEIFER - OPWEBGO
+
   # debug procs
   NativeProcess("bridge", "cereal/messaging", ["./bridge"], notcar),
   PythonProcess("webjoystick", "tools.bodyteleop.web", notcar),
