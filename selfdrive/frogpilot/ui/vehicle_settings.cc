@@ -98,6 +98,37 @@ FrogPilotVehiclesPanel::FrogPilotVehiclesPanel(SettingsWindow *parent) : ListWid
   selectModelButton->setValue(QString::fromStdString(params.get("CarModel")));
   addItem(selectModelButton);
 
+  noToggles = new QLabel(tr("No additional options available for the selected make."));
+  noToggles->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+  noToggles->setAlignment(Qt::AlignCenter);
+  addItem(noToggles);
+
+  std::vector<std::tuple<QString, QString, QString, QString>> vehicle_toggles {
+    {"EVTable", "EV Lookup Tables", "Smoothens out the gas and brake controls for EV vehicles.", ""},
+    {"LongPitch", "Long Pitch Compensation", "Reduces speed and acceleration error for greater passenger comfort and improved vehicle efficiency.", ""},
+    {"LowerVolt", "Lower Volt Enable Speed", "Lowers the Volt's minimum enable speed in order to enable openpilot at any speed.", ""},
+
+    {"LockDoors", "Lock Doors In Drive", "Automatically locks the doors when in drive and unlocks when in park.", ""},
+    {"SNGHack", "Stop and Go Hack", "Enable the 'Stop and Go' hack for vehicles without stock stop and go functionality.", ""},
+    {"TSS2Tune", "TSS2 Tune", "Tuning profile based on the tuning profile from DragonPilot for TSS2 vehicles.", ""}
+  };
+
+  for (auto &[param, title, desc, icon] : vehicle_toggles) {
+    auto toggle = new ParamControl(param, title, desc, icon, this);
+    addItem(toggle);
+    toggles[param.toStdString()] = toggle;
+
+    connect(toggles["TSS2Tune"], &ToggleControl::toggleFlipped, [=]() {
+      if (ConfirmationDialog::toggle("Reboot required to take effect.", "Reboot Now", parent)) {
+        Hardware::reboot();
+      }
+    });
+
+    connect(toggle, &ToggleControl::toggleFlipped, [this]() {
+      paramsMemory.putBool("FrogPilotTogglesUpdated", true);
+    });
+  }
+
   setModels();
   setToggles();
 }
@@ -109,53 +140,28 @@ void FrogPilotVehiclesPanel::setModels() {
 }
 
 void FrogPilotVehiclesPanel::setToggles() {
-  const bool gm = brandSelection == "Buick" || brandSelection == "Cadillac" || brandSelection == "Chevrolet"|| brandSelection == "GM"|| brandSelection == "GMC";
+  const bool gm = brandSelection == "Buick" || brandSelection == "Cadillac" || brandSelection == "Chevrolet" || brandSelection == "GM" || brandSelection == "GMC";
   const bool toyota = brandSelection == "Lexus" || brandSelection == "Toyota";
 
-  static bool gmTogglesAdded = false;
-  static bool toyotaTogglesAdded = false;
+  auto evtable = toggles["EVTable"];
+  evtable->setVisible(gm);
 
-  if(evTableToggle) evTableToggle->setEnabled(gm);
-  if(longPitchToggle) longPitchToggle->setEnabled(gm);
-  if(lowerVoltToggle) lowerVoltToggle->setEnabled(gm);
+  auto longPitch = toggles["LongPitch"];
+  longPitch->setVisible(gm);
 
-  if(lockDoorsToggle) lockDoorsToggle->setEnabled(toyota);
-  if(sngHackToggle) sngHackToggle->setEnabled(toyota);
-  if(tss2TuneToggle) tss2TuneToggle->setEnabled(toyota);
+  auto lowerVolt = toggles["LowerVolt"];
+  lowerVolt->setVisible(gm);
 
-  std::function<ToggleControl*(const char*, const char*, const char*)> addToggle = 
-    [&](const char *param, const char *title, const char *description) {
-      bool value = params.getBool(param);
-      ToggleControl *toggle = new ToggleControl(tr(title), description, "", value);
-      QObject::connect(toggle, &ToggleControl::toggleFlipped, [this, param](bool state) {
-        params.putBool(param, state);
-        paramsMemory.putBool("FrogPilotTogglesUpdated", true);
-      });
-      addItem(toggle);
-      return toggle;
-  };
+  auto lockDoors = toggles["LockDoors"];
+  lockDoors->setVisible(toyota);
 
-  if (gm && !gmTogglesAdded) {
-    evTableToggle = addToggle("EVTable", "EV Lookup Tables", 
-                              "Smoothens out the gas and brake controls for EV vehicles.");
+  auto sngHack = toggles["SNGHack"];
+  sngHack->setVisible(toyota);
 
-    longPitchToggle = addToggle("LongPitch", "Long Pitch Compensation", 
-                          "Reduces speed and acceleration error for greater passenger comfort and improved vehicle efficiency.");
+  auto tss2Tune = toggles["TSS2Tune"];
+  tss2Tune->setVisible(toyota);
 
-    lowerVoltToggle = addToggle("LowerVolt", "Lower Volt Enable Speed", 
-                                "Lowers the Volt's minimum enable speed in order to enable openpilot at any speed.");
+  noToggles->setVisible(!(gm || toyota));
 
-    gmTogglesAdded = true;
-  } else if (toyota && !toyotaTogglesAdded) {
-    lockDoorsToggle = addToggle("LockDoors", "Lock Doors In Drive", 
-                                "Automatically locks the doors when in drive and unlocks when in park.");
-
-    sngHackToggle = addToggle("SNGHack", "Stop and Go Hack", 
-                              "Enable the 'Stop and Go' hack for vehicles without stock stop and go functionality.");
-
-    tss2TuneToggle = addToggle("TSS2Tune", "TSS2 Tune", 
-                               "Tuning profile based on the tuning profile from DragonPilot for TSS2 vehicles.");
-
-    toyotaTogglesAdded = true;
-  }
+  this->update();
 }
