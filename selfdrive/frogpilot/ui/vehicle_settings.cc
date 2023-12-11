@@ -119,6 +119,7 @@ void FrogPilotVehiclesPanel::setToggles() {
   if(lowerVoltToggle) lowerVoltToggle->setEnabled(gm);
 
   if(lockDoorsToggle) lockDoorsToggle->setEnabled(toyota);
+  if(sngHackToggle) sngHackToggle->setEnabled(toyota);
 
   std::function<ToggleControl*(const char*, const char*, const char*)> addToggle = 
     [&](const char *param, const char *title, const char *description) {
@@ -143,6 +144,9 @@ void FrogPilotVehiclesPanel::setToggles() {
   } else if (toyota && !toyotaTogglesAdded) {
     lockDoorsToggle = addToggle("LockDoors", "Lock Doors In Drive", 
                                 "Automatically locks the doors when in drive and unlocks when in park.");
+
+    sngHackToggle = addToggle("SNGHack", "Stop and Go Hack", 
+                              "Enable the 'Stop and Go' hack for vehicles without stock stop and go functionality.");
 
     toyotaTogglesAdded = true;
   }

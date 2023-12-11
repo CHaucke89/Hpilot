@@ -18,6 +18,7 @@ private:
   ButtonControl *selectModelButton;
 
   ToggleControl *lockDoorsToggle;
+  ToggleControl *sngHackToggle;
 
   ToggleControl *longPitchToggle;
   ToggleControl *lowerVoltToggle;
