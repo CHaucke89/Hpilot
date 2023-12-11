@@ -65,6 +65,7 @@ const uint16_t GM_PARAM_HW_CAM_LONG = 2;
 const uint16_t GM_PARAM_HW_SDGM = 4;
 const uint16_t GM_PARAM_CC_LONG = 8;
 const uint16_t GM_PARAM_HW_ASCM_LONG = 16;
+const uint16_t GM_PARAM_NO_CAMERA = 32;
 const uint16_t GM_PARAM_NO_ACC = 64;
 
 enum {
@@ -78,6 +79,7 @@ enum {GM_ASCM, GM_CAM, GM_SDGM} gm_hw = GM_ASCM;
 bool gm_cam_long = false;
 bool gm_pcm_cruise = false;
 bool gm_has_acc = true;
+bool gm_skip_relay_check = false;
 bool gm_force_ascm = false;
 bool gm_cc_long = false;
 
@@ -294,6 +296,7 @@ static safety_config gm_init(uint16_t param) {
   gm_cc_long = GET_FLAG(param, GM_PARAM_CC_LONG);
   gm_cam_long = GET_FLAG(param, GM_PARAM_HW_CAM_LONG) && !gm_cc_long;
   gm_pcm_cruise = ((gm_hw == GM_CAM) && (!gm_cam_long || gm_cc_long) && !gm_force_ascm) || (gm_hw == GM_SDGM);
+  gm_skip_relay_check = GET_FLAG(param, GM_PARAM_NO_CAMERA);
   gm_has_acc = !GET_FLAG(param, GM_PARAM_NO_ACC);
 
   safety_config ret = BUILD_SAFETY_CFG(gm_rx_checks, GM_ASCM_TX_MSGS);
