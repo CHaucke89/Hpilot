@@ -115,6 +115,7 @@ void FrogPilotVehiclesPanel::setToggles() {
   static bool gmTogglesAdded = false;
   static bool toyotaTogglesAdded = false;
 
+  if(evTableToggle) evTableToggle->setEnabled(gm);
   if(longPitchToggle) longPitchToggle->setEnabled(gm);
   if(lowerVoltToggle) lowerVoltToggle->setEnabled(gm);
 
@@ -135,6 +136,9 @@ void FrogPilotVehiclesPanel::setToggles() {
   };
 
   if (gm && !gmTogglesAdded) {
+    evTableToggle = addToggle("EVTable", "EV Lookup Tables", 
+                              "Smoothens out the gas and brake controls for EV vehicles.");
+
     longPitchToggle = addToggle("LongPitch", "Long Pitch Compensation", 
                           "Reduces speed and acceleration error for greater passenger comfort and improved vehicle efficiency.");
 

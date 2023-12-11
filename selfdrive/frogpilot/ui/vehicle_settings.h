@@ -21,6 +21,7 @@ private:
   ToggleControl *sngHackToggle;
   ToggleControl *tss2TuneToggle;
 
+  ToggleControl *evTableToggle;
   ToggleControl *longPitchToggle;
   ToggleControl *lowerVoltToggle;
 
