@@ -919,7 +919,7 @@ class Controls:
       if self.conditional_experimental_mode:
         self.experimental_mode = self.sm['frogpilotLongitudinalPlan'].conditionalExperimental
       else:
-        self.experimental_mode = self.params.get_bool("ExperimentalMode")
+        self.experimental_mode = self.params.get_bool("ExperimentalMode") or self.params_memory.get_bool("SLCExperimentalMode")
 
     # Sample data from sockets and get a carState
     CS = self.data_sample()
