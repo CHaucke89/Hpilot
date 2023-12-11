@@ -120,6 +120,7 @@ void FrogPilotVehiclesPanel::setToggles() {
 
   if(lockDoorsToggle) lockDoorsToggle->setEnabled(toyota);
   if(sngHackToggle) sngHackToggle->setEnabled(toyota);
+  if(tss2TuneToggle) tss2TuneToggle->setEnabled(toyota);
 
   std::function<ToggleControl*(const char*, const char*, const char*)> addToggle = 
     [&](const char *param, const char *title, const char *description) {
@@ -147,6 +148,9 @@ void FrogPilotVehiclesPanel::setToggles() {
 
     sngHackToggle = addToggle("SNGHack", "Stop and Go Hack", 
                               "Enable the 'Stop and Go' hack for vehicles without stock stop and go functionality.");
+
+    tss2TuneToggle = addToggle("TSS2Tune", "TSS2 Tune", 
+                               "Tuning profile based on the tuning profile from DragonPilot for TSS2 vehicles.");
 
     toyotaTogglesAdded = true;
   }

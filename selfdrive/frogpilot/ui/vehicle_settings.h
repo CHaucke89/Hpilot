@@ -19,6 +19,7 @@ private:
 
   ToggleControl *lockDoorsToggle;
   ToggleControl *sngHackToggle;
+  ToggleControl *tss2TuneToggle;
 
   ToggleControl *longPitchToggle;
   ToggleControl *lowerVoltToggle;
