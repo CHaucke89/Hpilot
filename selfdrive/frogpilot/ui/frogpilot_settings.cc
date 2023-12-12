@@ -261,7 +261,7 @@ QFrame *FrogPilotPanel::whiteHorizontalLine(QWidget *parent) const {
   return line;
 }
 
-QWidget *FrogPilotPanel::createDualParamControl(ParamValueControl *control1, ParamValueControl *control2) {
+QWidget *FrogPilotPanel::createDualParamControl(ParamValueControlOld *control1, ParamValueControlOld *control2) {
   QWidget *mainControl = new QWidget(this);
   QHBoxLayout *layout = new QHBoxLayout();
 

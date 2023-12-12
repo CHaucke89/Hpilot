@@ -58,9 +58,9 @@ private:
   bool value;
 };
 
-class ParamValueControl : public AbstractControl {
+class ParamValueControlOld : public AbstractControl {
 protected:
-  ParamValueControl(const QString &name, const QString &description, const QString &iconPath)
+  ParamValueControlOld(const QString &name, const QString &description, const QString &iconPath)
     : AbstractControl(name, description, iconPath) {
     label.setAlignment(Qt::AlignVCenter | Qt::AlignRight);
     label.setStyleSheet("color: #e0e879");
@@ -124,7 +124,7 @@ protected:
 
   ParamControl *createParamControl(const QString &key, const QString &label, const QString &desc, const QString &icon, QWidget *parent);
   QWidget *addSubControls(const QString &parentKey, QVBoxLayout *layout, const std::vector<std::tuple<QString, QString, QString>> &controls);
-  QWidget *createDualParamControl(ParamValueControl *control1, ParamValueControl *control2);
+  QWidget *createDualParamControl(ParamValueControlOld *control1, ParamValueControlOld *control2);
   void addControl(const QString &key, const QString &label, const QString &desc, QVBoxLayout *layout, const QString &icon = "../assets/offroad/icon_blank.png");
   void createSubControl(const QString &key, const QString &label, const QString &desc, const QString &icon, const std::vector<QWidget*> &subControls, const std::vector<std::tuple<QString, QString, QString>> &additionalControls = {});
   void createSubButtonControl(const QString &parentKey, const std::vector<QPair<QString, QString>> &buttonKeys, QVBoxLayout *subControlLayout);
@@ -147,10 +147,10 @@ public:
 };
 
 #define ParamController(className, paramName, labelText, descText, iconPath, getValueStrFunc, newValueFunc) \
-class className : public ParamValueControl { \
+class className : public ParamValueControlOld { \
   Q_OBJECT \
 public: \
-  className() : ParamValueControl(labelText, descText, iconPath) { \
+  className() : ParamValueControlOld(labelText, descText, iconPath) { \
     if (std::string(#className) == "SLCFallback" || std::string(#className) == "SLCPriority") { \
       label.setFixedWidth(750); \
     } \
