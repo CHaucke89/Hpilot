@@ -187,6 +187,92 @@ private:
   bool store_confirm = false;
 };
 
+class ParamValueControl : public AbstractControl {
+  Q_OBJECT
+public:
+  ParamValueControl(const QString &param, const QString &title, const QString &desc, const QString &icon,
+                    const int &minimumValue, const int &maximumValue,
+                    const std::map<int, QString> &customLabels = {}, QWidget *parent = nullptr)
+      : AbstractControl(title, desc, icon, parent),
+        key(param.toStdString()),
+        params(),
+        value(std::clamp(atoi(params.get(key).c_str()), minimumValue, maximumValue)),
+        minimumValue(minimumValue),
+        maximumValue(maximumValue),
+        customLabels(customLabels) {
+    setupLayout();
+    updateValueLabel();
+  }
+
+private slots:
+  void decreaseValue() {
+    value = (value == minimumValue) ? maximumValue : value - 1;
+    updateValueLabel();
+  }
+
+  void increaseValue() {
+    value = (value == maximumValue) ? minimumValue : value + 1;
+    updateValueLabel();
+  }
+
+private:
+  void setupLayout() {
+    hlayout->setContentsMargins(0, 0, 0, 0);
+    hlayout->setSpacing(0);
+
+    QPushButton *minusButton = createButton("-", [this]{ decreaseValue(); });
+    hlayout->addWidget(minusButton);
+    hlayout->addSpacing(25);
+
+    valueLabel = new QLabel(this);
+    hlayout->addWidget(valueLabel);
+
+    hlayout->addSpacing(25);
+    QPushButton *plusButton = createButton("+", [this]{ increaseValue(); });
+    hlayout->addWidget(plusButton);
+  }
+
+  QPushButton *createButton(const QString &text, std::function<void()> slot) {
+    QPushButton *button = new QPushButton(text, this);
+    button->setFixedSize(150, 100);
+    button->setStyleSheet(buttonStyle);
+    button->setAutoRepeat(true);
+    button->setAutoRepeatInterval(150);
+    connect(button, &QPushButton::clicked, this, slot);
+    return button;
+  }
+
+  void updateValueLabel() {
+    auto it = customLabels.find(value);
+    QString labelText = (it != customLabels.end()) ? it->second : QString::number(value) + " ";
+    valueLabel->setText(labelText);
+    params.put(key, QString::number(value).toStdString());
+  }
+
+  std::string key;
+  Params params;
+  int value;
+  int minimumValue;
+  int maximumValue;
+  QLabel *valueLabel;
+  std::map<int, QString> customLabels;
+
+  inline static const QString buttonStyle = R"(
+    QPushButton {
+      border-radius: 50px;
+      font-size: 50px;
+      font-weight: 500;
+      height: 75px;
+      padding: 0 25 0 25;
+      color: #E4E4E4;
+      background-color: #393939;
+    }
+    QPushButton:pressed {
+      background-color: #4a4a4a;
+    }
+  )";
+};
+
 class ButtonParamControl : public AbstractControl {
   Q_OBJECT
 public:
