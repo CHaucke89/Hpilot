@@ -52,6 +52,7 @@ SoftwarePanel::SoftwarePanel(QWidget* parent) : ListWidget(parent) {
 
   updateTime = new ParamValueControl("UpdateTime", tr("Update Time"), tr("Set your desired update time for automatic updates."), "", 0, 23, timeLabels);
   time = params.getInt("UpdateTime");
+  deviceShutdown = params.getInt("DeviceShutdown") * 3600;
   addItem(updateTime);
 
   // download update btn
@@ -198,6 +199,19 @@ void SoftwarePanel::updateLabels() {
 }
 
 void SoftwarePanel::automaticUpdate() {
+  static int timer = 0;
+  static std::chrono::system_clock::time_point lastOffroadTime;
+
+  if (!is_onroad) {
+    if (timer == 0) {
+      lastOffroadTime = std::chrono::system_clock::now();
+    }
+    std::chrono::duration<int> elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - lastOffroadTime);
+    timer = elapsedTime.count();
+  } else {
+    timer = 0;
+  }
+
   const bool isWifiConnected = (*uiState()->sm)["deviceState"].getDeviceState().getNetworkType() == cereal::DeviceState::NetworkType::WIFI;
   if (schedule == 0 || is_onroad || !isWifiConnected) {
     return;
@@ -205,7 +219,11 @@ void SoftwarePanel::automaticUpdate() {
 
   static bool isDownloadCompleted = false;
   if (isDownloadCompleted && installBtn->isVisible()) {
-    params.putBool("DoReboot", true);
+    if (timer > deviceShutdown) {
+      params.putBool("DoShutdown", true);
+    } else {
+      params.putBool("DoReboot", true);
+    }
     return;
   }
 

@@ -97,6 +97,7 @@ private:
   // FrogPilot variables
   void automaticUpdate();
 
+  int deviceShutdown;
   int schedule;
   int time;
 
