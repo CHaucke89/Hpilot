@@ -182,6 +182,21 @@ class CarState(CarStateBase):
         self.param.put_int("LongitudinalPersonality", self.personality_profile)
         self.previous_personality_profile = self.personality_profile
 
+    # Toggle Experimental Mode from steering wheel function
+    if self.experimental_mode_via_press and ret.cruiseState.available:
+      lkas_pressed = cp.vl["BCM_PO_11"]["LFA_Pressed"]
+      if lkas_pressed and not self.lkas_previously_pressed:
+        if self.conditional_experimental_mode:
+          # Set "CEStatus" to work with "Conditional Experimental Mode"
+          conditional_status = self.param_memory.get_int("CEStatus")
+          override_value = 0 if conditional_status in (1, 2, 3, 4) else 1 if conditional_status >= 5 else 2
+          self.param_memory.put_int("CEStatus", override_value)
+        else:
+          experimental_mode = self.param.get_bool("ExperimentalMode")
+          # Invert the value of "ExperimentalMode"
+          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+      self.lkas_previously_pressed = lkas_pressed
+
     return ret
 
   def update_canfd(self, cp, cp_cam):
@@ -283,6 +298,21 @@ class CarState(CarStateBase):
         self.param.put_int("LongitudinalPersonality", self.personality_profile)
         self.previous_personality_profile = self.personality_profile
 
+    # Toggle Experimental Mode from steering wheel function
+    if self.experimental_mode_via_press and ret.cruiseState.available:
+      lkas_pressed = cp.vl[self.cruise_btns_msg_canfd]["LFA_BTN"]
+      if lkas_pressed and not self.lkas_previously_pressed:
+        if self.conditional_experimental_mode:
+          # Set "CEStatus" to work with "Conditional Experimental Mode"
+          conditional_status = self.param_memory.get_int("CEStatus")
+          override_value = 0 if conditional_status in (1, 2, 3, 4) else 1 if conditional_status >= 5 else 2
+          self.param_memory.put_int("CEStatus", override_value)
+        else:
+          experimental_mode = self.param.get_bool("ExperimentalMode")
+          # Invert the value of "ExperimentalMode"
+          put_bool_nonblocking("ExperimentalMode", not experimental_mode)
+      self.lkas_previously_pressed = lkas_pressed
+
     return ret
 
   def get_can_parser(self, CP):
@@ -331,6 +361,8 @@ class CarState(CarStateBase):
       messages.append(("TCU12", 100))
     else:
       messages.append(("LVR12", 100))
+
+    messages.append(("BCM_PO_11", 50))
 
     return CANParser(DBC[CP.carFingerprint]["pt"], messages, 0)
 
