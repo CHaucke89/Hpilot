@@ -10,13 +10,14 @@ from openpilot.common.conversions import Conversions as CV
 from openpilot.common.realtime import DT_CTRL
 from openpilot.selfdrive.locationd.calibrationd import MIN_SPEED_FILTER
 from openpilot.system.version import get_short_branch
+from openpilot.common.params import Params
 
 AlertSize = log.ControlsState.AlertSize
 AlertStatus = log.ControlsState.AlertStatus
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 EventName = car.CarEvent.EventName
-
+Offset = Params().get("SpeedLimitValueOffset")
 
 # Alert priorities
 class Priority(IntEnum):
@@ -277,7 +278,7 @@ def torque_nn_load_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
       "NN Lateral Controller Loaded",
       alert_text_2,
       alert_status, alert_size,
-      Priority.LOW, VisualAlert.none, audible_alert, 6.0)
+      Priority.LOW, VisualAlert.none, audible_alert, 3.0)
 
 # *** debug alerts ***
 
@@ -594,17 +595,17 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
   EventName.manualSteeringRequired: {
     ET.WARNING: Alert(
       "Lateral Control Turned Off",
-      "Steer Yourself, Bitch",
+      "Steer Manually",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.disengage, 1.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.disengage, 2.),
   },
 
   EventName.manualLongitudinalRequired: {
     ET.WARNING: Alert(
       "SCC Turned Off",
-      "Accelerate & Brake Like a Bitch",
+      "Accelerate & Brake Manually",
       AlertStatus.normal, AlertSize.mid,
-      Priority.LOW, VisualAlert.none, AudibleAlert.none, 1.),
+      Priority.LOW, VisualAlert.none, AudibleAlert.none, 2.),
   },
 
   EventName.cruiseEngageBlocked: {
@@ -678,7 +679,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.speedLimitActive: {
     ET.WARNING: Alert(
-      "Changing Set Speed to Speed Limit + 21% Offset",
+      "Changing Set Speed to Speed Limit + {Offset}% Offset",
       "",
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 3.),
