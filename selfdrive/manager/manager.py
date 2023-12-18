@@ -132,7 +132,7 @@ def manager_init() -> None:
     params.put_bool("RecordFront", True)
 
   # set defualt params
-  if params.get_bool("SshEnabled") is False:
+  if not params.get_bool("SshEnabled"):
     for k, v in default_params:
       params.put(k, v)
 
