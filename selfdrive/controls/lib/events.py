@@ -679,7 +679,7 @@ EVENTS: Dict[int, Dict[str, Union[Alert, AlertCallbackType]]] = {
 
   EventName.speedLimitActive: {
     ET.WARNING: Alert(
-      "Changing Set Speed to Speed Limit + {Offset}% Offset",
+      f"Changing Set Speed to Speed Limit +{Offset}% Offset",
       "",
       AlertStatus.normal, AlertSize.small,
       Priority.LOW, VisualAlert.none, AudibleAlert.none, 3.),
