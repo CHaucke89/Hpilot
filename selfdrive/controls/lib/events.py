@@ -17,7 +17,7 @@ AlertStatus = log.ControlsState.AlertStatus
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 EventName = car.CarEvent.EventName
-Offset = Params().get("SpeedLimitValueOffset")
+Offset = Params().get("SpeedLimitValueOffset", encoding="utf-8")
 
 # Alert priorities
 class Priority(IntEnum):
