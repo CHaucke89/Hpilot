@@ -389,7 +389,8 @@ ExperimentalButton::ExperimentalButton(QWidget *parent) : experimental_mode(fals
     {4, loadPixmap("../frogpilot/assets/wheel_images/rocket.png", {img_size, img_size})},
     {5, loadPixmap("../frogpilot/assets/wheel_images/hyundai.png", {img_size, img_size})},
     {6, loadPixmap("../frogpilot/assets/wheel_images/stalin.png", {img_size, img_size})},
-    {7, loadPixmap("../frogpilot/assets/random_events/images/firefox.png", {img_size, img_size})},
+    {7, loadPixmap("../frogpilot/assets/wheel_images/ev6.png", {img_size, img_size})},    
+    {8, loadPixmap("../frogpilot/assets/random_events/images/firefox.png", {img_size, img_size})},
   };
 
   wheelImagesGif[1] = new QMovie("../frogpilot/assets/random_events/images/weeb_wheel.gif", QByteArray(), this);
@@ -434,7 +435,7 @@ void ExperimentalButton::updateState(const UIState &s, bool leadInfo) {
     static int rotationDegree = 0;
     rotationDegree = (rotationDegree + 36) % 360;
     steeringAngleDeg = rotationDegree;
-    wheelIcon = 7;
+    wheelIcon = 8;
     update();
 
   } else if (treeFiddyRandomEventTriggered || weebRandomEventTriggered) {
@@ -1248,6 +1249,9 @@ void AnnotatedCameraWidget::initializeFrogPilotWidgets() {
                                                      {0.5, QBrush(QColor::fromHslF(223 / 360., 1.0, 0.5, 0.5))},
                                                      {1.0, QBrush(QColor::fromHslF(223 / 360., 1.0, 0.5, 0.1))}}}},
     {3, {"stalin_theme", 6, QColor(255, 0, 0, 255), {{0.0, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.9))},
+                                                     {0.5, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.5))},
+                                                     {1.0, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.1))}}}},
+    {4, {"hpilot_theme", 6, QColor(156, 5, 250, 255), {{0.0, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.9))},
                                                      {0.5, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.5))},
                                                      {1.0, QBrush(QColor::fromHslF(0 / 360., 1.0, 0.5, 0.1))}}}},
   };
