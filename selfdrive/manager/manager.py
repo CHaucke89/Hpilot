@@ -134,7 +134,7 @@ def manager_init() -> None:
     params.put_bool("RecordFront", True)
 
   # set defualt params
-  if not params.get_bool("SshEnabled"):
+  if params.get("CustomMapboxTokenPk") is None:
     for k, v in default_params:
       params.put(k, v)
 
