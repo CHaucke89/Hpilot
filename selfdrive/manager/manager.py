@@ -121,7 +121,7 @@ def manager_init() -> None:
     ("KisaTurnSteeringDisable", "0"),
     ("CarModel", ""),
     ("KisaHotspotOnBoot", "0"),
-    ("KisaSSHLegacy", "1"),
+    ("KisaSSHLegacy", "0"),
     ("CruiseOverMaxSpeed", "0"),
     ("JustDoGearD", "0"),
     ("LanelessMode", "2"),
