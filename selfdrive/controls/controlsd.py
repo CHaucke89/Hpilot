@@ -181,6 +181,9 @@ class Controls:
 
     self.frogpilot_variables = SimpleNamespace()
 
+    fire_the_babysitter = self.params.get_bool("FireTheBabysitter")
+    mute_dm = fire_the_babysitter and self.params.get_bool("MuteDM")
+
     self.drive_added = False
     self.driving_gear = False
     self.fcw_random_event_triggered = False
