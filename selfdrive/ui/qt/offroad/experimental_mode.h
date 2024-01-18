@@ -19,6 +19,7 @@ private:
 
   Params params;
   bool experimental_mode;
+  bool cem;
   int img_width = 100;
   int horizontal_padding = 30;
   QPixmap experimental_pixmap;
