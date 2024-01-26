@@ -19,7 +19,7 @@ AlertStatus = log.ControlsState.AlertStatus
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 AudibleAlert = car.CarControl.HUDControl.AudibleAlert
 EventName = car.CarEvent.EventName
-
+params = Params()
 
 # Alert priorities
 class Priority(IntEnum):
@@ -230,8 +230,8 @@ def startup_master_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubM
   branch = get_short_branch()  # Ensure get_short_branch is cached to avoid lags on startup
   if "REPLAY" in os.environ:
     branch = "replay"
-
-  return StartupAlert("Hippity hoppity this is my property", "so I do what I want 🐸", alert_status=AlertStatus.frogpilot)
+  cur_branch = params.get("GitBranch")
+  return StartupAlert("Current branch:", cur_branch, alert_status=AlertStatus.frogpilot)
 
 def below_engage_speed_alert(CP: car.CarParams, CS: car.CarState, sm: messaging.SubMaster, metric: bool, soft_disable_time: int) -> Alert:
   return NoEntryAlert(f"Drive above {get_display_speed(CP.minEnableSpeed, metric)} to engage")
