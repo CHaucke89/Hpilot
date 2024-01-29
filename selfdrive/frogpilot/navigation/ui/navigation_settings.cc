@@ -407,7 +407,7 @@ QString SelectMaps::activeButtonStyle = R"(
   border-width: 0;
   border-radius: 30px;
   color: #dddddd;
-  background-color: #33Ab4C;
+  background-color: #9c05fa;
 )";
 
 QString SelectMaps::normalButtonStyle = R"(
