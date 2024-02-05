@@ -283,6 +283,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"LowerVolt", PERSISTENT},
     {"MapTargetLatA", PERSISTENT},
     {"MapTargetVelocities", PERSISTENT},
+    {"Model", PERSISTENT},
     {"ModelUI", PERSISTENT},
     {"MTSCAggressiveness", PERSISTENT},
     {"MTSCCurvatureCheck", PERSISTENT},

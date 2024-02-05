@@ -10,6 +10,7 @@ from typing import List, Tuple, Union
 from cereal import log
 import cereal.messaging as messaging
 import openpilot.selfdrive.sentry as sentry
+from openpilot.common.basedir import BASEDIR
 from openpilot.common.params import Params, ParamKeyType
 from openpilot.common.text_window import TextWindow
 from openpilot.system.hardware import HARDWARE, PC
@@ -23,7 +24,6 @@ from openpilot.system.version import is_dirty, get_commit, get_version, get_orig
                            is_tested_branch, is_release_branch
 
 
-
 def manager_init() -> None:
   save_bootlog()
 
@@ -33,6 +33,14 @@ def manager_init() -> None:
   params.clear_all(ParamKeyType.CLEAR_ON_OFFROAD_TRANSITION)
   if is_release_branch():
     params.clear_all(ParamKeyType.DEVELOPMENT_ONLY)
+
+  # Check if the currently selected model still exists
+  current_model = params.get("Model", encoding='utf-8')
+  models_folder = os.path.join(BASEDIR, 'selfdrive/modeld/models/models')
+  model_exists = current_model in [os.path.splitext(file)[0] for file in os.listdir(models_folder)]
+
+  if not model_exists:
+    params.remove("Model")
 
   FrogsGoMoo = get_short_branch() == "FrogPilot-Development"
 
@@ -122,7 +130,7 @@ def manager_init() -> None:
     ("MTSCAggressiveness", "100" if FrogsGoMoo else "100"),
     ("MTSCCurvatureCheck", "1" if FrogsGoMoo else "0"),
     ("MTSCLimit", "30" if FrogsGoMoo else "99"),
-    ("Model", "0"),
+    ("Model", "los-angeles"),
     ("ModelUI", "1"),
     ("MTSCEnabled", "0" if FrogsGoMoo else "1"),
     ("MuteOverheated", "1" if FrogsGoMoo else "0"),
