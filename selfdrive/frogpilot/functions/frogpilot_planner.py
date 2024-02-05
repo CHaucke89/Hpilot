@@ -1,7 +1,9 @@
 import cereal.messaging as messaging
 
 from openpilot.common.conversions import Conversions as CV
+from openpilot.selfdrive.controls.lib.longitudinal_planner import A_CRUISE_MIN, get_max_accel
 
+from openpilot.selfdrive.frogpilot.functions.frogpilot_functions import FrogPilotFunctions
 
 class FrogPilotPlanner:
   def __init__(self, params, params_memory):
@@ -9,10 +11,20 @@ class FrogPilotPlanner:
 
     self.v_cruise = 0
 
+    self.accel_limits = [A_CRUISE_MIN, get_max_accel(0)]
+
     self.update_frogpilot_params(params, params_memory)
 
   def update(self, carState, controlsState, modelData, mpc, sm, v_cruise, v_ego):
     enabled = controlsState.enabled
+
+    # Acceleration profiles
+    if self.acceleration_profile == 1:
+      self.accel_limits = [self.fpf.get_min_accel_eco(v_ego), self.fpf.get_max_accel_eco(v_ego)]
+    elif self.acceleration_profile in (2, 3):
+      self.accel_limits = [self.fpf.get_min_accel_sport(v_ego), self.fpf.get_max_accel_sport(v_ego)]
+    else:
+      self.accel_limits = [A_CRUISE_MIN, get_max_accel(v_ego)]
 
     # Update the max allowed speed
     self.v_cruise = self.update_v_cruise(carState, controlsState, enabled, modelData, v_cruise, v_ego)
@@ -34,3 +46,4 @@ class FrogPilotPlanner:
     custom_ui = params.get_bool("CustomUI")
 
     longitudinal_tune = params.get_bool("LongitudinalTune")
+    self.acceleration_profile = params.get_int("AccelerationProfile") if longitudinal_tune else 0
