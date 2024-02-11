@@ -164,7 +164,7 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
                                                                                     "Set the 'Aggressive' personality' following distance. "
                                                                                     "Represents seconds to follow behind the lead vehicle.\n\nStock: 1.25 seconds.",
                                                                                     "../frogpilot/assets/other_images/aggressive.png",
-                                                                                    1, 5, std::map<int, QString>(), this, false, " sec", 1, 0.01);
+                                                                                    0.10, 5, std::map<int, QString>(), this, false, " sec", 1, 0.01);
       FrogPilotParamValueControl *aggressiveJerk = new FrogPilotParamValueControl("AggressiveJerk", " Jerk",
                                                                                   "Configure brake/gas pedal responsiveness for the 'Aggressive' personality. "
                                                                                   "Higher jerk value = smoother rides.\nLower jerk value = faster response.\n\nStock: 0.5.",
