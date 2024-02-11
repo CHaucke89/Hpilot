@@ -272,7 +272,15 @@ def manager_init() -> None:
     ("WarningSoftVolume", "100"),
     ("WarningImmediateVolume", "100"),
     ("WheelIcon", "3"),
-    ("WheelSpeed", "0")
+    ("WheelSpeed", "0"),
+
+    # Default Hpilot parameters
+    ("CustomTorque", "1"),
+    ("SteerMax", "409"),
+    ("DeltaUp", "3"),
+    ("DeltaDown", "7"),
+    ("DriverAllowance", "150"),
+    ("SteerThreshold", "250"),
   ]
   if not PC:
     default_params.append(("LastUpdateTime", datetime.datetime.utcnow().isoformat().encode('utf8')))
