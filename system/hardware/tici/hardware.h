@@ -51,7 +51,7 @@ public:
 
   static void reboot() { std::system("sudo reboot"); }
   static void soft_reboot() {
-	std::system("echo 894000.i2c | sudo tee /sys/bus/platform/drivers/i2c_geni/unbind");
+    std::system("echo 894000.i2c | sudo tee /sys/bus/platform/drivers/i2c_geni/unbind");
     std::system("echo 894000.i2c | sudo tee /sys/bus/platform/drivers/i2c_geni/bind");
     std::system("sudo systemctl restart comma"); 
   }
