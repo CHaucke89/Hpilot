@@ -259,6 +259,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"DeviceShutdown", PERSISTENT},
     {"DisableMTSCSmoothing", PERSISTENT},
     {"DisableOnroadUploads", PERSISTENT},
+    {"DoSoftReboot", CLEAR_ON_MANAGER_START},
     {"DisableVTSCSmoothing", PERSISTENT},
     {"DisengageVolume", PERSISTENT},
     {"DragonPilotTune", PERSISTENT},
