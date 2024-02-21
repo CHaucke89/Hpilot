@@ -133,7 +133,14 @@ class Tici(HardwareBase):
 
   def reboot(self, reason=None):
     subprocess.check_output(["sudo", "reboot"])
-
+  
+  def soft_reboot(self):
+    sudo_write("894000.i2c", "/sys/bus/platform/drivers/i2c_geni/unbind")
+    time.sleep(0.25)
+    sudo_write("894000.i2c", "/sys/bus/platform/drivers/i2c_geni/bind")
+    time.sleep(0.25)
+    os.system("sudo systemctl restart comma")
+  
   def uninstall(self):
     Path("/data/__system_reset__").touch()
     os.sync()
