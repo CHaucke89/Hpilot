@@ -25,10 +25,12 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
     {"ExperimentalModeViaDistance", "Long Pressing the Distance Button", "Enable/disable 'Experimental Mode' by holding down the 'distance' button on your steering wheel for 0.5 seconds.", ""},
 
     {"FireTheBabysitter", "Fire the Babysitter", "Deactivate some of openpilot's 'Babysitter' protocols for more user autonomy.", "../frogpilot/assets/toggle_icons/icon_babysitter.png"},
-    {"MuteOverheated", "Bypass Thermal Safety Limits", "Allow the device to run at any temperature even above comma's recommended thermal limits.", ""},
+    {"MuteDoor", "Mute Door Open Alert", "Disable alerts for open doors.", ""},
+    {"MuteDM", "Mute Driver Monitoring", "Disable driver monitoring.", ""},
+    {"MuteOverheated", "Mute Overheated System Alert", "Disable alerts for the device being overheated.", ""},
     {"NoLogging", "Disable Logging", "Turn off all data tracking to enhance privacy or reduce thermal load.\n\nWARNING: This action will prevent drive recording and data cannot be recovered!", ""},
     {"NoUploads", "Disable Uploads", "Turn off all data uploads to comma's servers.\n\nWARNING: This action will prevent your drives from appearing on comma connect which may impact debugging and support!", ""},
-    {"OfflineMode", "Offline Mode", "Allow the device to be offline indefinitely.", ""},
+    {"MuteSeatbelt", "Mute Seatbelt Unlatched Alert", "Disable alerts for unlatched seatbelts.", ""},
 
     {"LateralTune", "Lateral Tuning", "Modify openpilot's steering behavior.", "../frogpilot/assets/toggle_icons/icon_lateral_tune.png"},
     {"ForceAutoTune", "Force Auto Tune", "Forces comma's auto lateral tuning for unsupported vehicles.", ""},
@@ -509,7 +511,15 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
     }
   });
 
-  std::set<std::string> rebootKeys = {"AlwaysOnLateral", "HigherBitrate", "NNFF", "UseLateralJerk"};
+  QObject::connect(toggles["MuteOverheated"], &ToggleControl::toggleFlipped, [this]() {
+    if (params.getBool("MuteOverheated")) {
+      FrogPilotConfirmationDialog::toggleAlert(
+      "WARNING: This MAY cause premature wear or damage by running the device over comma's recommended temperature limits!",
+      "I understand the risks.", this);
+    }
+  });
+
+  std::set<std::string> rebootKeys = {"AlwaysOnLateral", "HigherBitrate", "NNFF", "UseLateralJerk", "MuteDM"};
   for (const std::string &key : rebootKeys) {
     QObject::connect(toggles[key], &ToggleControl::toggleFlipped, [this, key]() {
       if (started) {

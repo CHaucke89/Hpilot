@@ -220,6 +220,7 @@ typedef struct UIScene {
   bool road_name_ui;
   bool rotating_wheel;
   bool screen_recorder;
+  bool mute_dm;
   bool show_driver_camera;
   bool show_slc_offset;
   bool show_slc_offset_ui;

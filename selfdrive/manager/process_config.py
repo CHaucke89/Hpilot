@@ -45,8 +45,10 @@ def only_offroad(started, params, params_memory, CP: car.CarParams) -> bool:
 
 # FrogPilot functions
 def allow_uploads(started, params, params_memory, CP: car.CarParams) -> bool:
-  at_home = not started and HARDWARE.get_network_type() == WIFI
-  return at_home if params_memory.get_bool("DisableOnroadUploads") else True
+  return not started if params_memory.get_bool("DisableOnroadUploads") else enable_uploading(started, params, params_memory, CP)
+
+def enable_dm(started, params, params_memory, CP: car.CarParams) -> bool:
+  return driverview(started, params, params_memory, CP) and not (params_memory.get_bool("FireTheBabysitter") and params_memory.get_bool("MuteDM"))
 
 def enable_logging(started, params, params_memory, CP: car.CarParams) -> bool:
   return not (params_memory.get_bool("FireTheBabysitter") and params_memory.get_bool("NoLogging"))
@@ -67,7 +69,7 @@ procs = [
   PythonProcess("micd", "system.micd", iscar),
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
-  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(not PC or WEBCAM)),
+  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", enable_dm, enabled=(not PC or WEBCAM)),
   NativeProcess("encoderd", "system/loggerd", ["./encoderd"], (enable_logging and only_onroad)),
   NativeProcess("stream_encoderd", "system/loggerd", ["./encoderd", "--stream"], notcar),
   NativeProcess("loggerd", "system/loggerd", ["./loggerd"], (enable_logging and logging)),
@@ -83,7 +85,7 @@ procs = [
   PythonProcess("torqued", "selfdrive.locationd.torqued", only_onroad),
   PythonProcess("controlsd", "selfdrive.controls.controlsd", only_onroad),
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
-  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(not PC or WEBCAM)),
+  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", enable_dm, enabled=(not PC or WEBCAM)),
   PythonProcess("qcomgpsd", "system.qcomgpsd.qcomgpsd", qcomgps, enabled=TICI),
   PythonProcess("navd", "selfdrive.navd.navd", only_onroad),
   PythonProcess("pandad", "selfdrive.boardd.pandad", always_run),

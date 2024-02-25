@@ -215,7 +215,7 @@ def crash_log(candidate):
     "ConditionalExperimental", "CESpeed", "CESpeedLead", "CECurves", "CECurvesLead", "CENavigation", "CENavigationIntersections",
     "CENavigationLead", "CENavigationTurns", "CESlowerLead", "CEStopLights", "CEStopLightsLead", "CESignal", "CustomPersonalities",
     "AggressiveFollow", "AggressiveJerk", "StandardFollow", "StandardJerk", "RelaxedFollow", "RelaxedJerk", "DeviceShutdown",
-    "ExperimentalModeActivation", "ExperimentalModeViaLKAS", "ExperimentalModeViaScreen", "FireTheBabysitter", "NoLogging", "MuteOverheated",
+    "ExperimentalModeActivation", "ExperimentalModeViaLKAS", "ExperimentalModeViaScreen", "FireTheBabysitter", "NoLogging", "MuteOverheated", "MuteDM", "MuteSeatbelt", "MuteDoor",
     "OfflineMode", "LateralTune", "ForceAutoTune", "NNFF", "SteerRatio", "UseLateralJerk", "LongitudinalTune", "AccelerationProfile",
     "DecelerationProfile", "AggressiveAcceleration", "StoppingDistance", "SmoothBraking", "Model", "MTSCEnabled", "DisableMTSCSmoothing",
     "MTSCAggressiveness", "MTSCCurvatureCheck", "MTSCLimit", "NudgelessLaneChange", "LaneChangeTime", "LaneDetection", "LaneDetectionWidth",
