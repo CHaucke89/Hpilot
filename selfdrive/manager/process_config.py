@@ -47,6 +47,9 @@ def allow_uploads(started, params, params_memory, CP: car.CarParams) -> bool:
   at_home = not started or not params_memory.get_bool("DisableOnroadUploads")
   return allow_uploads and at_home
 
+def enable_dm(started, params, params_memory, CP: car.CarParams) -> bool:
+  return driverview(started, params, params_memory, CP) and not (params_memory.get_bool("FireTheBabysitter") and params_memory.get_bool("MuteDM"))
+
 def allow_logging(started, params, params_memory, CP: car.CarParams) -> bool:
   allow_logging = not (params_memory.get_bool("FireTheBabysitter") and params_memory.get_bool("NoLogging"))
   return allow_logging and logging(started, params, params_memory, CP)
@@ -64,7 +67,7 @@ procs = [
   PythonProcess("micd", "system.micd", iscar),
   PythonProcess("timed", "system.timed", always_run, enabled=not PC),
 
-  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", driverview, enabled=(not PC or WEBCAM)),
+  PythonProcess("dmonitoringmodeld", "selfdrive.modeld.dmonitoringmodeld", enable_dm, enabled=(not PC or WEBCAM)),
   NativeProcess("encoderd", "system/loggerd", ["./encoderd"], allow_logging),
   NativeProcess("stream_encoderd", "system/loggerd", ["./encoderd", "--stream"], notcar),
   NativeProcess("loggerd", "system/loggerd", ["./loggerd"], allow_logging),
@@ -80,7 +83,7 @@ procs = [
   PythonProcess("torqued", "selfdrive.locationd.torqued", only_onroad),
   PythonProcess("controlsd", "selfdrive.controls.controlsd", only_onroad),
   PythonProcess("deleter", "system.loggerd.deleter", always_run),
-  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", driverview, enabled=(not PC or WEBCAM)),
+  PythonProcess("dmonitoringd", "selfdrive.monitoring.dmonitoringd", enable_dm, enabled=(not PC or WEBCAM)),
   PythonProcess("qcomgpsd", "system.qcomgpsd.qcomgpsd", qcomgps, enabled=TICI),
   PythonProcess("navd", "selfdrive.navd.navd", only_onroad),
   PythonProcess("pandad", "selfdrive.boardd.pandad", always_run),

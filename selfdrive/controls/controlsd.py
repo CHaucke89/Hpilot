@@ -204,6 +204,9 @@ class Controls:
     ignore = self.sensor_packets + ['testJoystick']
     if SIMULATION:
       ignore += ['driverCameraState', 'managerState']
+    if mute_dm:
+      ignore += ['driverMonitoringState']
+      self.params.put_bool("DmModelInitialized", True)
     self.sm = messaging.SubMaster(['deviceState', 'pandaStates', 'peripheralState', 'modelV2', 'liveCalibration',
                                    'driverMonitoringState', 'longitudinalPlan', 'liveLocationKalman',
                                    'managerState', 'liveParameters', 'radarState', 'liveTorqueParameters',
@@ -1238,6 +1241,10 @@ class Controls:
     frog_sounds = custom_sounds == 1
     self.goat_scream = frog_sounds and self.params.get_bool("GoatScream")
     self.holiday_themes = custom_theme and self.params.get_bool("HolidayThemes")
+
+    fire_the_babysitter = self.params.get_bool("FireTheBabysitter")
+    self.frogpilot_variables.mute_door = fire_the_babysitter and self.params.get_bool("MuteDoor")
+    self.frogpilot_variables.mute_seatbelt = fire_the_babysitter and self.params.get_bool("MuteSeatbelt")
 
     experimental_mode_activation = self.params.get_bool("ExperimentalModeActivation")
     self.frogpilot_variables.experimental_mode_via_distance = experimental_mode_activation and self.params.get_bool("ExperimentalModeViaDistance")
