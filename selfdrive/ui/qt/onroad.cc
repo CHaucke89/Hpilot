@@ -1300,8 +1300,9 @@ void AnnotatedCameraWidget::updateFrogPilotWidgets(QPainter &p) {
   conditionalSpeedLead = scene.conditional_speed_lead;
   conditionalStatus = scene.conditional_status;
 
-  bool disableSmoothing = scene.vtsc_controlling_curve ? scene.disable_smoothing_vtsc : scene.disable_smoothing_mtsc;
+  bool disableSmoothing = vtscControllingCurve ? scene.disable_smoothing_vtsc : scene.disable_smoothing_mtsc;
   cruiseAdjustment = disableSmoothing ? fmax(setSpeed - scene.adjusted_cruise, 0) : fmax(0.25 * (setSpeed - scene.adjusted_cruise) + 0.75 * cruiseAdjustment - 1, 0);
+  vtscControllingCurve = scene.vtsc_controlling_curve;
 
   customColors = scene.custom_colors;
 
