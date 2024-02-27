@@ -7,6 +7,8 @@ from openpilot.system.hardware import HARDWARE
 
 params_memory = Params("/dev/shm/params")
 
+DEFAULT_MODEL = "los-angeles"
+
 CRUISING_SPEED = 5  # Roughly the speed cars go when not touching the gas while in drive
 THRESHOLD = 5       # Time threshold (0.25s)
 
