@@ -369,6 +369,7 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"StorageParamsSet", PERSISTENT},
     {"TetheringEnabled", PERSISTENT},
     {"UnlimitedLength", PERSISTENT},
+    {"Updated", PERSISTENT},
     {"UpdateSchedule", PERSISTENT},
     {"UpdateTime", PERSISTENT},
     {"UseSI", PERSISTENT},
