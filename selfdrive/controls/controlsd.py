@@ -187,7 +187,9 @@ class Controls:
     self.random_event_triggered = False
     self.stopped_for_light_previously = False
 
+    self.drive_distance = 0
     self.max_acceleration = 0
+    self.previous_drive_distance = 0
     self.previous_lead_distance = 0
     self.previous_speed_limit = SpeedLimitController.desired_speed_limit
     self.random_event_timer = 0
@@ -573,6 +575,13 @@ class Controls:
 
       if self.sm['modelV2'].frameDropPerc > 20:
         self.events.add(EventName.modeldLagging)
+
+    # Store the total distance traveled
+    self.drive_distance += CS.vEgo * DT_CTRL
+
+    if self.drive_distance != self.previous_drive_distance:
+      self.params_memory.put_float("FrogPilotKilometers", self.drive_distance / 1000)
+      self.params_memory.put_float("FrogPilotMinutes", self.sm.frame * DT_CTRL / 60)
 
     # Acceleration Random Event alerts
     if self.random_events:
