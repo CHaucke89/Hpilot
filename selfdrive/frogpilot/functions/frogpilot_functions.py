@@ -78,6 +78,17 @@ class FrogPilotFunctions:
 
     return min(distance_to_lane, distance_to_road_edge)
 
+  def lkas_button_function(self, conditional_experimental_mode):
+    if conditional_experimental_mode:
+      # Set "CEStatus" to work with "Conditional Experimental Mode"
+      conditional_status = params_memory.get_int("CEStatus")
+      override_value = 0 if conditional_status in (1, 2, 3, 4) else 1 if conditional_status >= 5 else 2
+      params_memory.put_int("CEStatus", override_value)
+    else:
+      experimental_mode = self.params.get_bool("ExperimentalMode")
+      # Invert the value of "ExperimentalMode"
+      self.params.put_bool("ExperimentalMode", not experimental_mode)
+
   @staticmethod
   def road_curvature(modelData, v_ego):
     predicted_velocities = np.array(modelData.velocity.x)
