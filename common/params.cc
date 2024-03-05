@@ -435,6 +435,15 @@ std::unordered_map<std::string, uint32_t> keys = {
     {"WarningImmediateVolume", PERSISTENT},
     {"WheelIcon", PERSISTENT},
     {"WheelSpeed", PERSISTENT},
+
+    // Hpilot parameters
+    {"CustomTorque", PERSISTENT},
+    {"SteerMax", PERSISTENT},
+    {"DeltaUp", PERSISTENT},
+    {"DeltaDown", PERSISTENT},
+    {"DriverAllowance", PERSISTENT},
+    {"SteerThreshold", PERSISTENT}
+
 };
 
 } // namespace

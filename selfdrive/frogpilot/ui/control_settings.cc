@@ -36,6 +36,13 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
     {"ForceAutoTune", "Force Auto Tune", "Forces comma's auto lateral tuning for unsupported vehicles.", ""},
     {"NNFF", "NNFF - Neural Network Feedforward", "Use Twilsonco's Neural Network Feedforward for enhanced precision in lateral control.", ""},
     {"SteerRatio", steerRatioStock != 0 ? QString("Steer Ratio (Default: %1)").arg(steerRatioStock, 0, 'f', 2) : "Steer Ratio", "Set a custom steer ratio for your vehicle controls.", ""},
+
+    {"CustomTorque", "Override Torque Values", "Override the default steering torque values.", ""},
+    {"SteerMax", "Steer Max (Default: 270)", "Adjust the maximum steering torque openpilot can apply.", ""},
+    {"DeltaUp", "Delta Up (Default: 2)", "Adjust how quickly the steering torque is ramped up.", ""},
+    {"DeltaDown", "Delta Down (Default: 3)", "Adjust how quickly the steering torque is ramped down.", ""},
+    {"DriverAllowance", "Driver Allowance (Default: 250)", "Adjust the driver torque allowance.", ""},
+    {"SteerThreshold", "Steer Threshold (Default: 250)", "Adjust the steering torque threshold.", ""},
     {"UseLateralJerk", "Use Lateral Jerk", "Include steer torque necessary to achieve desired steer rate (lateral jerk).", ""},
 
     {"LongitudinalTune", "Longitudinal Tuning", "Modify openpilot's acceleration and braking behavior.", "../frogpilot/assets/toggle_icons/icon_longitudinal_tune.png"},
@@ -239,7 +246,25 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
       toggle = lateralTuneToggle;
     } else if (param == "SteerRatio") {
       toggle = new FrogPilotParamValueControl(param, title, desc, icon, steerRatioStock * 0.75, steerRatioStock * 1.25, std::map<int, QString>(), this, false, "", 1, 0.01);
-
+    } else if (param == "CustomTorque") {
+      FrogPilotParamManageControl *customTorqueToggle = new FrogPilotParamManageControl(param, title, desc, icon, this);
+      QObject::connect(customTorqueToggle, &FrogPilotParamManageControl::manageButtonClicked, this, [this]() {
+        parentToggleClicked();
+        for (auto &[key, toggle] : toggles) {
+          toggle->setVisible(customTorqueKeys.find(key.c_str()) != customTorqueKeys.end());
+        }
+      });
+      toggle = customTorqueToggle;
+    } else if (param == "SteerMax") {
+      toggle = new FrogPilotParamValueControl(param, title, desc, icon, 200, 409, std::map<int, QString>(), this, false, "");
+    } else if (param == "DeltaUp") {
+      toggle = new FrogPilotParamValueControl(param, title, desc, icon, 1, 7, std::map<int, QString>(), this, false, "");
+    } else if (param == "DeltaDown") {
+      toggle = new FrogPilotParamValueControl(param, title, desc, icon, 1, 15, std::map<int, QString>(), this, false, "");
+    } else if (param == "DriverAllowance") {
+      toggle = new FrogPilotParamValueControl(param, title, desc, icon, 50, 450, std::map<int, QString>(), this, false, "");
+    } else if (param == "SteerThreshold") {
+      toggle = new FrogPilotParamValueControl(param, title, desc, icon, 50, 450, std::map<int, QString>(), this, false, "");
     } else if (param == "LongitudinalTune") {
       FrogPilotParamManageControl *longitudinalTuneToggle = new FrogPilotParamManageControl(param, title, desc, icon, this);
       QObject::connect(longitudinalTuneToggle, &FrogPilotParamManageControl::manageButtonClicked, this, [this]() {
@@ -511,14 +536,6 @@ FrogPilotControlsPanel::FrogPilotControlsPanel(SettingsWindow *parent) : FrogPil
     }
   });
 
-  QObject::connect(toggles["MuteOverheated"], &ToggleControl::toggleFlipped, [this]() {
-    if (params.getBool("MuteOverheated")) {
-      FrogPilotConfirmationDialog::toggleAlert(
-      "WARNING: This MAY cause premature wear or damage by running the device over comma's recommended temperature limits!",
-      "I understand the risks.", this);
-    }
-  });
-
   std::set<std::string> rebootKeys = {"AlwaysOnLateral", "HigherBitrate", "NNFF", "UseLateralJerk", "MuteDM"};
   for (const std::string &key : rebootKeys) {
     QObject::connect(toggles[key], &ToggleControl::toggleFlipped, [this, key]() {
@@ -682,6 +699,8 @@ void FrogPilotControlsPanel::parentToggleClicked() {
   standardProfile->setVisible(false);
   relaxedProfile->setVisible(false);
 
+
+
   openParentToggle();
 }
 
@@ -705,6 +724,7 @@ void FrogPilotControlsPanel::hideSubToggles() {
                       fireTheBabysitterKeys.find(key.c_str()) != fireTheBabysitterKeys.end() ||
                       laneChangeKeys.find(key.c_str()) != laneChangeKeys.end() ||
                       lateralTuneKeys.find(key.c_str()) != lateralTuneKeys.end() ||
+                      customTorqueKeys.find(key.c_str()) != customTorqueKeys.end() ||
                       longitudinalTuneKeys.find(key.c_str()) != longitudinalTuneKeys.end() ||
                       mtscKeys.find(key.c_str()) != mtscKeys.end() ||
                       qolKeys.find(key.c_str()) != qolKeys.end() ||
