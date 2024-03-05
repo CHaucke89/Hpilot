@@ -443,7 +443,7 @@ def main() -> None:
     HARDWARE.uninstall()
   elif params.get_bool("DoSoftReboot"):
     cloudlog.warning("softreboot")
-    HARDWARE.reboot()
+    HARDWARE.soft_reboot()
   elif params.get_bool("DoReboot"):
     cloudlog.warning("reboot")
     HARDWARE.reboot()
