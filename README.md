@@ -1,3 +1,7 @@
+This is my personal fork of FrogPilot and contains lots of "unsafe" code that can get you banned from comma.ai's servers. This is intended to be used only by myself and may be broken at any time.
+This fork is not affiliated with FrogAi or FrogPilot in any way.
+Use at your own risk.
+
 Licensing
 ------
 
