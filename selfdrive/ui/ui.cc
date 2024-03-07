@@ -351,6 +351,9 @@ void ui_update_frogpilot_params(UIState *s) {
   scene.experimental_mode_via_screen = params.getBool("ExperimentalModeViaScreen") && params.getBool("ExperimentalModeActivation");
   scene.fahrenheit = params.getBool("Fahrenheit");
 
+  bool longitudinal_tune = params.getBool("LongitudinalTune");
+  scene.traffic_mode = longitudinal_tune && params.getBool("TrafficMode");
+
   scene.model_ui = params.getBool("ModelUI");
   scene.dynamic_path_width = scene.model_ui && params.getBool("DynamicPathWidth");
   scene.hide_lead_marker = scene.model_ui && params.getBool("HideLeadMarker");
@@ -480,6 +483,9 @@ void UIState::update() {
   }
   if (scene.random_events) {
     scene.current_random_event = paramsMemory.getInt("CurrentRandomEvent");
+  }
+  if (scene.traffic_mode) {
+    scene.traffic_mode_active = paramsMemory.getBool("TrafficModeActive");
   }
 }
 

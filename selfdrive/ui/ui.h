@@ -229,6 +229,8 @@ typedef struct UIScene {
   bool standstill;
   bool status_changed;
   bool tethering_enabled;
+  bool traffic_mode;
+  bool traffic_mode_active;
   bool turn_signal_left;
   bool turn_signal_right;
   bool unlimited_road_ui_length;
