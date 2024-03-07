@@ -15,6 +15,8 @@
 #include "selfdrive/ui/qt/widgets/controls.h"
 #include "selfdrive/ui/ui.h"
 
+#include "selfdrive/frogpilot/ui/frogpilot_ui_functions.h"
+
 // ********** settings window + top-level panels **********
 class SettingsWindow : public QFrame {
   Q_OBJECT

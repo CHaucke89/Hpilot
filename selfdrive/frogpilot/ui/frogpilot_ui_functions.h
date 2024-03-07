@@ -180,6 +180,54 @@ private:
   QButtonGroup *button_group;
 };
 
+class FrogPilotButtonsControl : public ParamControl {
+  Q_OBJECT
+public:
+  FrogPilotButtonsControl(const QString &title, const QString &desc, const QString &icon,
+                          const std::vector<QString> &button_texts, const int minimum_button_width = 225)
+    : ParamControl("", title, desc, icon) {
+    const QString style = R"(
+      QPushButton {
+        border-radius: 50px;
+        font-size: 40px;
+        font-weight: 500;
+        height: 100px;
+        padding: 0 25px 0 25px;
+        color: #E4E4E4;
+        background-color: #393939;
+      }
+      QPushButton:pressed {
+        background-color: #33Ab4C;
+      }
+      QPushButton:disabled {
+        color: #33E4E4E4;
+      }
+    )";
+
+    button_group = new QButtonGroup(this);
+
+    for (size_t i = 0; i < button_texts.size(); i++) {
+      QPushButton *button = new QPushButton(button_texts[i], this);
+      button->setStyleSheet(style);
+      button->setMinimumWidth(minimum_button_width);
+      hlayout->addWidget(button);
+      button_group->addButton(button, static_cast<int>(i));
+
+      connect(button, &QPushButton::clicked, this, [this, i]() {
+        emit buttonClicked(static_cast<int>(i));
+      });
+    }
+
+    toggle.hide();
+  }
+
+signals:
+  void buttonClicked(int id);
+
+private:
+  QButtonGroup *button_group;
+};
+
 class FrogPilotButtonsParamControl : public ParamControl {
   Q_OBJECT
 public:
