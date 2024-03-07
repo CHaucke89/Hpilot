@@ -2,13 +2,13 @@ import cereal.messaging as messaging
 import numpy as np
 
 from openpilot.common.conversions import Conversions as CV
-from openpilot.common.numpy_fast import clip
+from openpilot.common.numpy_fast import clip, interp
 from openpilot.selfdrive.car.interfaces import ACCEL_MIN, ACCEL_MAX
 from openpilot.selfdrive.controls.lib.desire_helper import LANE_CHANGE_SPEED_MIN
 from openpilot.selfdrive.controls.lib.longitudinal_mpc_lib.long_mpc import STOP_DISTANCE
 from openpilot.selfdrive.controls.lib.longitudinal_planner import A_CRUISE_MIN, get_max_accel
 
-from openpilot.selfdrive.frogpilot.functions.frogpilot_functions import CRUISING_SPEED, FrogPilotFunctions
+from openpilot.selfdrive.frogpilot.functions.frogpilot_functions import CITY_SPEED_LIMIT, CRUISING_SPEED, FrogPilotFunctions
 
 from openpilot.selfdrive.frogpilot.functions.conditional_experimental_mode import ConditionalExperimentalMode
 from openpilot.selfdrive.frogpilot.functions.map_turn_speed_controller import MapTurnSpeedController
@@ -16,6 +16,8 @@ from openpilot.selfdrive.frogpilot.functions.speed_limit_controller import Speed
 
 
 TARGET_LAT_A = 1.9  # m/s^2
+
+TRAFFIC_MODE_BP = [0., CITY_SPEED_LIMIT / 4, CITY_SPEED_LIMIT / 3, CITY_SPEED_LIMIT / 2, CITY_SPEED_LIMIT]
 
 class FrogPilotPlanner:
   def __init__(self, CP, params, params_memory):
@@ -28,6 +30,7 @@ class FrogPilotPlanner:
     self.mtsc = MapTurnSpeedController()
 
     self.override_slc = False
+    self.traffic_mode_active = False
 
     self.overridden_speed = 0
     self.mtsc_target = 0
@@ -86,6 +89,11 @@ class FrogPilotPlanner:
 
     # Update the current road curvature
     self.road_curvature = self.fpf.road_curvature(modelData, v_ego)
+
+    # Update the current state of "Traffic Mode"
+    self.traffic_mode_active = self.traffic_mode and self.params_memory.get_bool("TrafficModeActive")
+    if self.traffic_mode_active:
+      self.traffic_mode_t_follow = interp(v_ego, TRAFFIC_MODE_BP, [.50, .65, .80, .95, 1.])
 
     # Update the desired stopping distance
     self.stop_distance = STOP_DISTANCE
@@ -235,6 +243,7 @@ class FrogPilotPlanner:
     self.aggressive_acceleration = longitudinal_tune and params.get_bool("AggressiveAcceleration")
     self.increased_stopping_distance = params.get_int("StoppingDistance") * (1 if self.is_metric else CV.FOOT_TO_METER) if longitudinal_tune else 0
     self.smoother_braking = longitudinal_tune and params.get_bool("SmoothBraking")
+    self.traffic_mode = longitudinal_tune and params.get_bool("TrafficMode")
 
     self.map_turn_speed_controller = params.get_bool("MTSCEnabled")
     if self.map_turn_speed_controller:
