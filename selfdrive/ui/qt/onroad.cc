@@ -309,11 +309,11 @@ void OnroadAlerts::updateAlert(const Alert &a) {
 }
 
 void OnroadAlerts::paintEvent(QPaintEvent *event) {
-  if (alert.size == cereal::ControlsState::AlertSize::NONE) {
+  if (alert.size == cereal::ControlsState::AlertSize::NONE || scene.show_driver_camera && alert.status != cereal::ControlsState::AlertStatus::CRITICAL) {
     return;
   }
 
-  if ((scene.hide_alerts || scene.show_driver_camera) && alert.size == cereal::ControlsState::AlertSize::SMALL) {
+  if ((scene.hide_alerts) && alert.size == cereal::ControlsState::AlertSize::SMALL) {
     return;
   }
 
