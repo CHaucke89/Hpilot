@@ -258,7 +258,6 @@ def manager_init() -> None:
     ("SteerRatio", "0"),
     ("StockTune", "0"),
     ("StoppingDistance", "0"),
-    ("StorageParamsSet", "0"),
     ("TurnAggressiveness", "100"),
     ("TurnDesires", "0"),
     ("UnlimitedLength", "1"),
@@ -285,10 +284,8 @@ def manager_init() -> None:
         params.put(k, v)
       else:
         params.put(k, params_storage.get(k))
-    elif not params.get_bool("StorageParamsSet"):
+    else:
       params_storage.put(k, params.get(k))
-
-  params.put_bool("StorageParamsSet", True)
 
   # Create folders needed for msgq
   try:
