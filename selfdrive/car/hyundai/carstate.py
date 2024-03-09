@@ -184,7 +184,7 @@ class CarState(CarStateBase):
       self.main_enabled = not self.main_enabled
 
     # FrogPilot functions
-    distance_pressed = self.cruise_buttons[-1] == Buttons.GAP_DIST and self.prev_cruise_buttons == 0
+    distance_pressed = self.cruise_buttons[-1] == Buttons.GAP_DIST
 
     # Driving personalities function
     if ret.cruiseState.available:
