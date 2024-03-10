@@ -50,6 +50,7 @@ FrogPilotVisualsPanel::FrogPilotVisualsPanel(SettingsWindow *parent) : FrogPilot
     {"NumericalTemp", "Numerical Temperature Gauge", "Replace the 'GOOD', 'OK', and 'HIGH' temperature statuses with a numerical temperature gauge based on the highest temperature between the memory, CPU, and GPU.", "../frogpilot/assets/toggle_icons/icon_temperature.png"},
 
     {"QOLVisuals", "Quality of Life", "Miscellaneous quality of life changes to improve your overall openpilot experience.", "../frogpilot/assets/toggle_icons/quality_of_life.png"},
+    {"DisableStartupAlert", "Disable Startup Alert", "Disable the welcome message on startup.", ""},
     {"DriveStats", "Drive Stats In Home Screen", "Display your device's drive stats in the home screen.", ""},
     {"FullMap", "Full Sized Map", "Maximize the size of the map in the onroad UI.", ""},
     {"HideSpeed", "Hide Speed", "Hide the speed indicator in the onroad UI. Additional toggle allows it to be hidden/shown via tapping the speed itself.", ""},
