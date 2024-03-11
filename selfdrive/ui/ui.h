@@ -209,7 +209,6 @@ typedef struct UIScene {
   bool map_open;
   bool model_ui;
   bool numerical_temp;
-  bool parked;
   bool pedals_on_ui;
   bool personalities_via_screen;
   bool random_events;

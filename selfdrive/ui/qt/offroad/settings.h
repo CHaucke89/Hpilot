@@ -13,7 +13,6 @@
 
 #include "selfdrive/ui/qt/util.h"
 #include "selfdrive/ui/qt/widgets/controls.h"
-#include "selfdrive/ui/ui.h"
 
 // ********** settings window + top-level panels **********
 class SettingsWindow : public QFrame {
@@ -114,8 +113,6 @@ private:
 
   // FrogPilot variables
   void automaticUpdate();
-
-  UIScene &scene;
 
   ButtonControl *updateTime;
 
