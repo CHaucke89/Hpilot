@@ -171,7 +171,7 @@ class CarState(CarStateBase):
     # FrogPilot functions
     has_camera = self.CP.networkLocation == NetworkLocation.fwdCamera
     has_camera &= not self.CP.flags & GMFlags.NO_CAMERA.value
-    has_camera &= not self.CP.carFingerprint in (CC_ONLY_CAR)
+    has_camera &= not self.CP.carFingerprint in CC_ONLY_CAR
 
     if self.CP.carFingerprint in SDGM_CAR:
       distance_pressed = cam_cp.vl["ASCMSteeringButton"]["DistanceButton"]
@@ -186,14 +186,17 @@ class CarState(CarStateBase):
         self.fpf.reset_personality_changed_param()
 
       if distance_pressed:
-        self.distance_pressed_counter += 1
+        if self.display_menu:
+          self.distance_pressed_counter += 1
 
         if not self.distance_previously_pressed:
           self.display_timer = 350
 
+        self.display_menu = True
+
       elif self.distance_previously_pressed:
         # Set the distance lines on the dash to match the new personality if the button was held down for less than 0.5 seconds
-        if self.distance_pressed_counter < CRUISE_LONG_PRESS and frogpilot_variables.personalities_via_wheel:
+        if self.distance_pressed_counter < CRUISE_LONG_PRESS and frogpilot_variables.personalities_via_wheel and self.display_menu:
           if has_camera:
             # Need to subtract by 1 to comply with the personality profiles of "0", "1", and "2"
             self.personality_profile = cam_cp.vl["ASCMActiveCruiseControlStatus"]["ACCGapLevel"] - 1
@@ -207,7 +210,6 @@ class CarState(CarStateBase):
       # Check if the display is open
       if self.display_timer > 0:
         self.display_timer -= 1
-        self.display_menu = True
       else:
         self.display_menu = False
 
