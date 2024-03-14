@@ -1199,7 +1199,7 @@ void AnnotatedCameraWidget::drawLockon(QPainter &painter, const cereal::ModelDat
   float y1 = leadcar_lockon[1].x * leadcar_lockon[1].d;
 #endif
 
-  configFont(painter, FONT_OPEN_SANS, 38, "SemiBold");
+  ConfigFont(painter, FONT_OPEN_SANS, 38, "SemiBold");
   if(num == 0 /* && uiState()->scene.mLockOnButton */){
     //推論1番
     painter.setPen(QPen(QColor(0.09*255, 0.945*255, 0.26*255, prob_alpha), 2));
