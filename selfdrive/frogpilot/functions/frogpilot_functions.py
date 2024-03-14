@@ -5,7 +5,7 @@ from openpilot.common.params import Params
 from openpilot.system.hardware import HARDWARE
 
 
-DEFAULT_MODEL = "los-angeles"
+DEFAULT_MODEL = "duck-amigo"
 
 CITY_SPEED_LIMIT = 25
 CRUISING_SPEED = 5  # Roughly the speed cars go when not touching the gas while in drive
