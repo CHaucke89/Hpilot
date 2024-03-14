@@ -276,6 +276,8 @@ protected:
   void updateFrameMat() override;
   void drawLaneLines(QPainter &painter, const UIState *s);
   void drawLead(QPainter &painter, const cereal::RadarState::LeadData::Reader &lead_data, const QPointF &vd);
+  // Ichiro Stuff
+  void drawLockon(QPainter &painter, const cereal::ModelDataV2::LeadDataV3::Reader &lead_data, const QPointF &vd , int num  /*使っていない, size_t leads_num , const cereal::RadarState::LeadData::Reader &lead0, const cereal::RadarState::LeadData::Reader &lead1 */);
   void drawHud(QPainter &p);
   void drawDriverState(QPainter &painter, const UIState *s);
   void paintEvent(QPaintEvent *event) override;
