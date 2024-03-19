@@ -285,6 +285,7 @@ class CarInterface(CarInterfaceBase):
     ret.startAccel = 1.0
     ret.longitudinalActuatorDelayLowerBound = 0.5
     ret.longitudinalActuatorDelayUpperBound = 0.5
+    ret.stoppingDecelRate = params.get_float("StoppingDecelRate")
 
     # *** feature detection ***
     if candidate in CANFD_CAR:
