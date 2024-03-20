@@ -16,7 +16,7 @@ CRASHES_DIR = '/data/community/crashes/'
 
 class SentryProject(Enum):
   # python project
-  SELFDRIVE = "https://5ad1714d27324c74a30f9c538bff3b8d@o4505034923769856.ingest.sentry.io/4505034930651136"
+  SELFDRIVE = "https://b92e8065624b2fe45bd459954a6bd4c4@o4506940416262144.ingest.us.sentry.io/4506940426420224"
   # native project
   SELFDRIVE_NATIVE = "https://5ad1714d27324c74a30f9c538bff3b8d@o4505034923769856.ingest.sentry.io/4505034930651136"
 
@@ -75,8 +75,8 @@ def set_tag(key: str, value: str) -> None:
 
 def init(project: SentryProject) -> bool:
   # forks like to mess with this, so double check
-  frogpilot = "FrogAi" in get_origin()
-  if not frogpilot or PC:
+  hpilot = "CHaucke89" in get_origin()
+  if not hpilot or PC:
     return False
 
   env = "release" if is_tested_branch() else "master"
