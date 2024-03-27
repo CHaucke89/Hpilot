@@ -127,6 +127,7 @@ class LatControlTorque(LatControl):
     self.torque_params.latAccelOffset = latAccelOffset
     self.torque_params.friction = friction
 
+  def update_ui_params(self, latAccelFactor, friction):
     params_memory.put_float("LatAccel", latAccelFactor)
     params_memory.put_float("Friction", friction)
 
