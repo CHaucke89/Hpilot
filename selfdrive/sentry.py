@@ -18,7 +18,7 @@ class SentryProject(Enum):
   # python project
   SELFDRIVE = "https://b92e8065624b2fe45bd459954a6bd4c4@o4506940416262144.ingest.us.sentry.io/4506940426420224"
   # native project
-  SELFDRIVE_NATIVE = "https://5ad1714d27324c74a30f9c538bff3b8d@o4505034923769856.ingest.sentry.io/4505034930651136"
+  SELFDRIVE_NATIVE = "https://1836276ce419917781175eee711a11c8@o4506940416262144.ingest.us.sentry.io/4506980422909952"
 
 
 def report_tombstone(fn: str, message: str, contents: str) -> None:
