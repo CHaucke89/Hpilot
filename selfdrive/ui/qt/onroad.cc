@@ -2097,7 +2097,7 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
     {15, "Experimental Mode activated for stop" + (mapOpen ? "" : QString(" sign / stop light"))},
   };
 
-  QString roadName = roadNameUI ? QString::fromStdString(paramsMemory.get("RoadName")) : QString();
+  QString roadName = QString::number(paramsMemory.getFloat("LatAccel")) + " " + QString::number(paramsMemory.getFloat("Friction"));
 
   // Update status text
  /* if (alwaysOnLateralActive) {
