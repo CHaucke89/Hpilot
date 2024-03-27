@@ -5,6 +5,7 @@ import numpy as np
 from cereal import log
 from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.numpy_fast import interp
+from openpilot.common.params import Params
 from openpilot.selfdrive.car.interfaces import LatControlInputs
 from openpilot.selfdrive.controls.lib.drive_helpers import CONTROL_N, apply_deadzone
 from openpilot.selfdrive.controls.lib.latcontrol import LatControl
@@ -28,6 +29,8 @@ LOW_SPEED_Y = [15, 13, 10, 5]
 LOW_SPEED_Y_NN = [12, 3, 1, 0]
 
 LAT_PLAN_MIN_IDX = 5
+
+params_memory = Params("/dev/shm/params")
 
 def get_predicted_lateral_jerk(lat_accels, t_diffs):
   # compute finite difference between subsequent model_data.acceleration.y values
@@ -123,6 +126,9 @@ class LatControlTorque(LatControl):
     self.torque_params.latAccelFactor = latAccelFactor
     self.torque_params.latAccelOffset = latAccelOffset
     self.torque_params.friction = friction
+
+    params_memory.put_float("LatAccel", latAccelFactor)
+    params_memory.put_float("Friction", friction)
 
   def update(self, active, CS, VM, params, steer_limited, desired_curvature, llk, model_data=None):
     pid_log = log.ControlsState.LateralTorqueState.new_message()

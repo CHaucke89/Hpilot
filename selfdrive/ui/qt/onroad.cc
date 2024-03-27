@@ -2100,14 +2100,16 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
   QString roadName = roadNameUI ? QString::fromStdString(paramsMemory.get("RoadName")) : QString();
 
   // Update status text
-  if (alwaysOnLateralActive) {
+ /* if (alwaysOnLateralActive) {
     newStatus = QString("Always On Lateral active") + (mapOpen ? "" : ". Press the \"Cruise Control\" button to disable");
   } else if (conditionalExperimental) {
     newStatus = conditionalStatusMap[status != STATUS_DISENGAGED ? conditionalStatus : 0];
-  }
+  }*/
+
+  newStatus = QString::number(paramsMemory.getFloat("LatAccel")) + " " + QString::number(paramsMemory.getFloat("Friction"));
 
   // Append suffix to the status
-  QString distanceSuffix = ". Long press the \"distance\" button to revert";
+ /* QString distanceSuffix = ". Long press the \"distance\" button to revert";
   QString lkasSuffix = ". Double press the \"LKAS\" button to revert";
   QString screenSuffix = ". Double tap the screen to revert";
 
@@ -2119,7 +2121,7 @@ void AnnotatedCameraWidget::drawStatusBar(QPainter &p) {
     } else if (conditionalStatus == 5 || conditionalStatus == 6) {
       newStatus += lkasSuffix;
     }
-  }
+  }*/
 
   // Check if status has changed or if the road name is empty
   if (newStatus != lastShownStatus || roadName.isEmpty()) {
