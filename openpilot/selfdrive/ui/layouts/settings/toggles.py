@@ -170,7 +170,7 @@ class TogglesLayout(Widget):
       "cloudypilot defaults to driving in chill mode. Experimental mode enables alpha-level features that aren't ready for chill mode. " +
       "Experimental features are listed below:<br>" +
       "<h4>End-to-End Longitudinal Control</h4><br>" +
-      "Let the driving model control the gas and brakes. cloudypilot will drive as it thinks a human would, including stopping for red lights and stop signs. " +
+      "Let the driving model control the gas and brake. cloudypilot will drive as it thinks a human would, including stopping for red lights and stop signs. " +
       "Since the driving model decides the speed to drive, the set speed will only act as an upper bound. This is an alpha quality feature; " +
       "mistakes should be expected.<br>" +
       "<h4>New Driving Visualization</h4><br>" +
