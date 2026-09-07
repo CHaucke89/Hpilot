@@ -833,6 +833,11 @@ EVENTS: dict[int, dict[str, Alert | AlertCallbackType]] = {
   EventName.userBookmark: {
     ET.PERMANENT: NormalPermanentAlert("Bookmark Saved", duration=1.5),
   },
+
+  EventName.softRebootBlocked: {
+    ET.SOFT_DISABLE: soft_disable_alert("Disengage to soft reboot"),
+    ET.NO_ENTRY: NoEntryAlert("Disengage to soft reboot"),
+  },
 }
 
 
