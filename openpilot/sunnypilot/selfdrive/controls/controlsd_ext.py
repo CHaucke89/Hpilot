@@ -48,11 +48,11 @@ class ControlsExt(ModelStateBase):
       return lac
 
   # Determine if we're using the learned steer ratio or a custom fixed value
-  def get_steer_ratio(self, vehicle_params):
-    use_custom_sr = self.params.get_bool("UseCustomSR")
-    custom_sr = self.params.get("CustomSR", return_default=True)
-    sr = max(vehicle_params.steerRatio, 0.1) if not use_custom_sr else max(round(custom_sr, 2), 0.1)
-    return sr
+  def get_steer_ratio(self, lp):
+    custom_sr = self.params.get("CustomSR")
+    if not self.params.get_bool("UseCustomSR") or custom_sr is None:
+      return max(lp.steerRatio, 0.1)
+    return max(round(custom_sr, 2), 0.1)
 
   def get_params_sp(self, sm: messaging.SubMaster) -> None:
     if time.monotonic() - self._param_update_time > PARAMS_UPDATE_PERIOD:
