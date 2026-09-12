@@ -6,7 +6,7 @@ from openpilot.system.ui.sunnypilot.widgets.list_view import toggle_item_sp
 from openpilot.selfdrive.ui.sunnypilot.layouts.settings.steering import SteeringLayout
 from openpilot.system.ui.cloudypilot.widgets.list_view import LineSeparatorCP
 from openpilot.system.ui.cloudypilot.widgets.list_view import option_item_cp
-
+from opendbc.car.structs import car
 
 
 class SteeringLayoutCP(SteeringLayout):
@@ -47,7 +47,7 @@ class SteeringLayoutCP(SteeringLayout):
     if dat is None:
       return None
     try:
-      return messaging.log_from_bytes(dat).steerRatio
+      return messaging.log_from_bytes(dat, car.CarParams)
     except Exception:
       return None
 
