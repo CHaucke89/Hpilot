@@ -59,7 +59,7 @@ class SteeringLayoutCP(SteeringLayout):
     sr = self._learned_steer_ratio()
     if sr is None:
       return
-    self._custom_sr.action_item.set_value(int(round(sr * 100)))
+    self._custom_sr.action_item.set_value(int(round(sr * 100, 1)))
 
   def _update_state(self):
     super()._update_state()
