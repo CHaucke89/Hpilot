@@ -43,11 +43,11 @@ class SteeringLayoutCP(SteeringLayout):
     return items
 
   def _learned_steer_ratio(self) -> float | None:
-    dat = ui_state.params.get("LiveParametersV2")
+    dat = ui_state.params.get("CarParams")
     if dat is None:
       return None
     try:
-      return messaging.log_from_bytes(dat).vehicleParameters.steerRatio
+      return messaging.log_from_bytes(dat).steerRatio
     except Exception:
       return None
 
