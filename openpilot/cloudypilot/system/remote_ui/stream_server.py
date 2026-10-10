@@ -271,11 +271,11 @@ HTML_PAGE = """
       animation: pulse 2s infinite;
     }
     .status-indicator.connected {
-      background: #44ff44;
+      background: #ffa200;
       animation: none;
     }
     .status-indicator.streaming {
-      background: #44ff44;
+      background: #ffa200;
       animation: pulse 1s infinite;
     }
     @keyframes pulse {
@@ -299,7 +299,7 @@ HTML_PAGE = """
       position: absolute;
       width: 40px;
       height: 40px;
-      border: 2px solid #00ff00;
+      border: 2px solid #ffa200;
       border-radius: 50%;
       background: rgba(0, 255, 0, 0.2);
       pointer-events: none;
