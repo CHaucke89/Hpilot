@@ -13,11 +13,10 @@ import numpy as np
 import threading
 import time
 from setproctitle import setproctitle
-from tinygrad.tensor import Tensor
 
 import openpilot.cereal.messaging as messaging
 from openpilot.common.hardware import COMMA_HARDWARE
-from openpilot.selfdrive.modeld.helpers import chestnut_present, load_oob
+from openpilot.selfdrive.modeld.helpers import chestnut_present
 from openpilot.cereal import log
 from opendbc.car.structs import car
 from openpilot.cereal.services import SERVICE_LIST
@@ -32,19 +31,19 @@ from openpilot.common.filter_simple import FirstOrderFilter
 from openpilot.common.realtime import config_realtime_process, DT_MDL
 from openpilot.common.transformations.camera import DEVICE_CAMERAS
 from openpilot.common.transformations.model import get_warp_matrix
-from openpilot.system import sentry
-from openpilot.system.camerad.cameras.nv12_info import get_nv12_info
 from openpilot.selfdrive.controls.lib.desire_helper import DesireHelper
 from openpilot.selfdrive.controls.lib.drive_helpers import get_accel_from_plan, smooth_value
-from openpilot.selfdrive.modeld.modeld import ChestnutState
+from openpilot.selfdrive.modeld.modeld import ChestnutGpuState
 
 from openpilot.sunnypilot.modeld_v2.fill_model_msg import fill_model_msg, fill_pose_msg, PublishState, get_curvature_from_output
-from openpilot.sunnypilot.modeld_v2.constants import Plan
+from openpilot.sunnypilot.modeld_v2.parse_model_outputs import Parser
+from openpilot.sunnypilot.modeld_v2.constants import ModelConstants, Plan
 from openpilot.sunnypilot.modeld_v2.meta_helper import load_meta_constants
 from openpilot.sunnypilot.modeld_v2.camera_offset_helper import CameraOffsetHelper
-from openpilot.sunnypilot.modeld_v2.compile_modeld import derive_frame_skip, make_split_input_queues, make_supercombo_input_queues, WARP_INPUTS, POLICY_INPUTS
 from openpilot.sunnypilot.livedelay.helpers import get_lat_delay
 from openpilot.sunnypilot.modeld_v2.modeld_base import ModelStateBase
+from openpilot.sunnypilot.modeld_v2.helpers import load_oob
+from openpilot.sunnypilot.modeld_v2.model_adapters import get_model_adapter
 from openpilot.sunnypilot.models.helpers import get_active_bundle
 from openpilot.sunnypilot.selfdrive.controls.lib.relc import RoadEdgeLaneChangeController
 
@@ -112,6 +111,7 @@ class ModelState(ModelStateBase):
     jits = load_oob(open_file_chunked(pkl_path))
 
     metadata = jits['metadata']
+<<<<<<< HEAD
     self.WARP_DEV = metadata.get('warp_dev', 'QCOM' if COMMA_HARDWARE else 'CPU')
     self.DEV = 'AMD' if self.chestnut else ('QCOM' if COMMA_HARDWARE else 'CPU')
     self.QUEUE_DEV = self.DEV
@@ -150,23 +150,35 @@ class ModelState(ModelStateBase):
     self._desire_key = next(key for key in self.numpy_inputs if key.startswith('desire'))
     self._road_key = next(key for key in self._vision_input_names if 'big' not in key)
     self._wide_key = next(key for key in self._vision_input_names if 'big' in key)
+=======
+    self.WARP_DEV = metadata.get('warp_dev', 'QCOM') if COMMA_HARDWARE else 'CPU'
+    self.DEV = ('AMD' if self.chestnut else 'QCOM') if COMMA_HARDWARE else 'CPU'
+    self.QUEUE_DEV = self.DEV
+    self.adapter = get_model_adapter(jits, cam_w, cam_h, self.DEV, self.QUEUE_DEV, self.WARP_DEV, self.chestnut)
+    self.vision_output_slices = self.adapter.vision_output_slices
+    self.policy_output_slices = self.adapter.policy_output_slices
+    self._policy_slices_list = self.adapter._policy_slices_list
+    self._combined_model_type = self.adapter._combined_model_type
+    self._vision_input_names = self.adapter._vision_input_names
+    self.numpy_inputs = self.adapter.numpy_inputs
+    self._policy_keys = self.adapter._policy_keys
+    self._has_on_policy = self.adapter._has_on_policy
+    self._desire_key = self.adapter._desire_key
+    self._road_key = self.adapter._road_key
+    self._wide_key = self.adapter._wide_key
+    self.frame_buf_params = self.adapter.frame_buf_params
+>>>>>>> upstream/master
 
     is_20hz = bundle.is20hz if bundle else self._combined_model_type in ('split', 'multi_policy')
     if is_20hz:
       from openpilot.sunnypilot.models.split_model_constants import SplitModelConstants
       self.constants = SplitModelConstants()
     else:
-      from openpilot.sunnypilot.modeld_v2.constants import ModelConstants
       self.constants = ModelConstants()
 
-    if self._combined_model_type != 'supercombo':
-      from openpilot.sunnypilot.modeld_v2.parse_model_outputs_split import Parser as SplitParser
-      self.parser = SplitParser()
-    else:
-      from openpilot.sunnypilot.modeld_v2.parse_model_outputs import Parser as CombinedParser
-      self.parser = CombinedParser()
-
+    self.parser = Parser()
     self.prev_desire = np.zeros(self.constants.DESIRE_LEN, dtype=np.float32)
+<<<<<<< HEAD
     self.full_frames: dict = {}
     self._blob_cache: dict = {}
     nv12_info = get_nv12_info(cam_w, cam_h)
@@ -176,24 +188,14 @@ class ModelState(ModelStateBase):
     frame_tensor = Tensor(np.zeros(yuv_size, dtype=np.uint8), device=self.WARP_DEV).contiguous().realize()
     big_frame_tensor = Tensor(np.zeros(yuv_size, dtype=np.uint8), device=self.WARP_DEV).contiguous().realize()
     self.warp(**{k: self.input_queues[k] for k in WARP_INPUTS}, frame=frame_tensor, big_frame=big_frame_tensor)
+=======
+>>>>>>> upstream/master
 
   def warmup(self) -> None:
-    dummy_frames = {k: np.zeros(self.frame_buf_params[k][3], dtype=np.uint8) for k in self._vision_input_names}
-    transforms = {k: np.eye(3, dtype=np.float32) for k in [self._road_key, self._wide_key] if k}
-
-    dummy_inputs = {}
-    for k, v in self.numpy_inputs.items():
-      if k not in ['tfm', 'big_tfm', 'prev_feat']:
-        dummy_inputs[k] = np.zeros(v.shape, dtype=v.dtype)
-
-    self.run(dummy_frames, transforms, dummy_inputs, prepare_only=False)
-
-    for v in self.numpy_inputs.values():
-      v[:] = 0
+    dummy_frames, transforms, dummy_inputs = self.adapter.get_dummy_inputs()
+    self.run(dummy_frames, transforms, dummy_inputs)
+    self.adapter.reset_warmup_buffers()
     self.prev_desire[:] = 0
-    self.full_frames.clear()
-    self._blob_cache.clear()
-
 
   @property
   def mlsim(self) -> bool:
@@ -208,6 +210,7 @@ class ModelState(ModelStateBase):
     return self._desire_key
 
   def run(self, bufs: dict[str, VisionBuf], transforms: dict[str, np.ndarray],
+<<<<<<< HEAD
           inputs: dict[str, np.ndarray], prepare_only: bool,
           after_enqueue: Callable[[], None] | None = None) -> dict[str, np.ndarray] | None:
     for key in bufs.keys():
@@ -217,15 +220,23 @@ class ModelState(ModelStateBase):
       if cache_key not in self._blob_cache:
         self._blob_cache[cache_key] = Tensor.from_blob(ptr, (yuv_size,), dtype='uint8', device=self.WARP_DEV)
       self.full_frames[key] = self._blob_cache[cache_key]
+=======
+          inputs: dict[str, np.ndarray],
+          after_enqueue: Callable[[], None] | None = None) -> dict[str, np.ndarray] | None:
+    self.adapter.copy_frames(bufs)
+>>>>>>> upstream/master
 
     desire_key = self.desire_key
     inputs[desire_key][0] = 0
-    self.numpy_inputs[desire_key][:] = np.where(inputs[desire_key] - self.prev_desire > .99, inputs[desire_key], 0)
+    (self.numpy_inputs[desire_key].flat if self.adapter.is_native else self.numpy_inputs[desire_key])[:] = \
+      np.where(inputs[desire_key] - self.prev_desire > .99, inputs[desire_key], 0)
     self.prev_desire[:] = inputs[desire_key]
+
     for key in ('traffic_convention', 'lateral_control_params', 'action_t'):
       if key in self.numpy_inputs and key in inputs:
         self.numpy_inputs[key][:] = inputs[key]
 
+<<<<<<< HEAD
     road_key = self._road_key
     wide_key = self._wide_key
     self.numpy_inputs['tfm'][:, :] = transforms[road_key].reshape(3, 3)
@@ -236,6 +247,18 @@ class ModelState(ModelStateBase):
       return None
     warped = self.warp(**{k: self.input_queues[k] for k in WARP_INPUTS}, frame=self.full_frames[road_key], big_frame=self.full_frames[wide_key])
     raw_outputs = self.run_policy(**{k: self.input_queues[k] for k in POLICY_INPUTS if k in self.input_queues}, warped=warped)
+=======
+    if self.adapter.is_native:
+      for i, key in enumerate(self._vision_input_names):
+        if key in transforms:
+          self.numpy_inputs['tfm'][i] = transforms[key].reshape(3, 3)
+    else:
+      self.numpy_inputs['tfm'][:, :] = transforms[self._road_key].reshape(3, 3)
+      self.numpy_inputs['big_tfm'][:, :] = transforms[self._wide_key].reshape(3, 3)
+
+    raw_outputs = self.adapter.run()
+
+>>>>>>> upstream/master
     if after_enqueue is not None:
       after_enqueue()
 
@@ -245,25 +268,26 @@ class ModelState(ModelStateBase):
         raise RuntimeError("model output not finite")
       sliced = {k: model_output[np.newaxis, v] for k, v in self.vision_output_slices.items()}
       outputs = self.parser.parse_outputs(sliced)
-      if 'prev_feat' in self.numpy_inputs:
-        self.numpy_inputs['prev_feat'][:] = model_output[self.vision_output_slices['hidden_state']]
+      if 'prev_feat' in self.numpy_inputs and 'hidden_state' in self.vision_output_slices:
+        (self.numpy_inputs['prev_feat'].flat if self.adapter.is_native else self.numpy_inputs['prev_feat'])[:] = \
+          model_output[self.vision_output_slices['hidden_state']]
     else:
       vision_output = raw_outputs[0].numpy().flatten()
       vision_sliced = {k: vision_output[np.newaxis, v] for k, v in self.vision_output_slices.items()}
       outputs = self.parser.parse_vision_outputs(vision_sliced)
 
       if 'prev_feat' in self.numpy_inputs and 'hidden_state' in self.vision_output_slices:
-        self.numpy_inputs['prev_feat'][:] = vision_output[self.vision_output_slices['hidden_state']]
+        (self.numpy_inputs['prev_feat'].flat if self.adapter.is_native else self.numpy_inputs['prev_feat'])[:] = \
+          vision_output[self.vision_output_slices['hidden_state']]
 
       for i, policy_slices in enumerate(self._policy_slices_list):
         policy_output = raw_outputs[i + 1].numpy().flatten()
         policy_sliced = {k: policy_output[np.newaxis, v] for k, v in policy_slices.items()}
         parsed = self.parser.parse_policy_outputs(policy_sliced)
-        if ('off' in self._policy_keys[i]
-          and self._has_on_policy
-          and any('plan' in self._policy_slices_list[j] for j, k in enumerate(self._policy_keys) if 'on' in k.lower())):
-
-          parsed.pop('plan', None)
+        if 'off' in self._policy_keys[i] and self._has_on_policy:
+          for key in ('plan', 'planplus', 'action'):
+            if any(key in self._policy_slices_list[j] for j, k in enumerate(self._policy_keys) if 'on' in k.lower()):
+              parsed.pop(key, None)
 
         outputs.update(parsed)
 
@@ -306,7 +330,6 @@ class ModelState(ModelStateBase):
 def main(demo=False):
   cloudlog.warning("modeld init")
 
-  sentry.set_tag("daemon", PROCESS_NAME)
   cloudlog.bind(daemon=PROCESS_NAME)
   setproctitle(PROCESS_NAME)
   config_realtime_process(7, 54)
@@ -370,12 +393,12 @@ def main(demo=False):
   cloudlog.warning(f"models loaded in {time.monotonic() - st:.1f}s, modeld starting")
 
   # messaging
-  pub_socks = ["modelV2", "drivingModelData", "cameraOdometry", "modelDataV2SP"] + (["chestnutState"] if CHESTNUT else [])
+  pub_socks = ["modelV2", "drivingModelData", "cameraOdometry", "modelDataV2SP"] + (["chestnutGpuState"] if CHESTNUT else [])
   pm = PubMaster(pub_socks)
   sm = SubMaster(["deviceState", "carState", "narrowRoadCameraState", "extrinsicsCalibration", "driverMonitoringState", "carControl", "lateralDelay"])
 
   publish_state = PublishState()
-  chestnut_state = ChestnutState(pm, model.chestnut) if CHESTNUT else None
+  chestnut_state = ChestnutGpuState(pm, model.chestnut) if CHESTNUT else None
 
   # setup filter to track dropped frames
   frame_dropped_filter = FirstOrderFilter(0., 10., 1. / model.constants.MODEL_FREQ)
@@ -474,9 +497,6 @@ def main(demo=False):
     run_count = run_count + 1
 
     frame_drop_ratio = frames_dropped / (1 + frames_dropped)
-    prepare_only = vipc_dropped_frames > 0
-    if prepare_only:
-      cloudlog.error(f"skipping model eval. Dropped {vipc_dropped_frames} frames")
 
     bufs = {name: buf_extra if 'big' in name else buf_main for name in model.vision_input_names}
     transforms = {name: model_transform_extra if 'big' in name else model_transform_main for name in model.vision_input_names}
@@ -500,12 +520,17 @@ def main(demo=False):
     mt1 = time.perf_counter()
     try:
       send_chestnut = (chestnut_state is not None and
+<<<<<<< HEAD
                        run_count % round(model.constants.MODEL_FREQ / SERVICE_LIST['chestnutState'].frequency) == 0)
       model_output = model.run(bufs, transforms, inputs, prepare_only, chestnut_state.send if send_chestnut else None)
+=======
+                       run_count % round(model.constants.MODEL_FREQ / SERVICE_LIST['chestnutGpuState'].frequency) == 0)
+      model_output = model.run(bufs, transforms, inputs, chestnut_state.send if send_chestnut else None)
+>>>>>>> upstream/master
     except Exception:
       if not params.get_bool("ChestnutActive"):
         raise
-      cloudlog.exception("chestnut failed, falling back to small")
+      cloudlog.exception("big model failed, fall back to small")
       params.put_bool("ChestnutActive", False)
       assert small_model is not None
       model = small_model
@@ -537,6 +562,7 @@ def main(demo=False):
       DH.update(sm['carState'], sm['carControl'].latActive, lane_change_prob, left_edge, right_edge)
       modelv2_send.modelV2.meta.laneChangeState = DH.lane_change_state
       modelv2_send.modelV2.meta.laneChangeDirection = DH.lane_change_direction
+      mdv2sp_send.valid = modelv2_send.valid
       mdv2sp_send.modelDataV2SP.laneTurnDirection = DH.lane_turn_direction
       drivingdata_send.drivingModelData.meta.laneChangeState = DH.lane_change_state
       drivingdata_send.drivingModelData.meta.laneChangeDirection = DH.lane_change_direction
@@ -558,5 +584,5 @@ if __name__ == "__main__":
   except KeyboardInterrupt:
     cloudlog.warning(f"child {PROCESS_NAME} got SIGINT")
   except Exception:
-    sentry.capture_exception()
+    cloudlog.exception("modeld exception")
     raise
