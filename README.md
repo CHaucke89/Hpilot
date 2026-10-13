@@ -38,6 +38,53 @@ and runs alongside the other openpilot/sunnypilot/cloudypilot processes. Verify 
 
 Make sure you're connected to the same Wifi network as the device and head to `http://<device-ip>:8081` in your browser to view and interact with the comma device remotely. The log file is located at `/tmp/cloudypilot_stream_server.log`.
 
+## Use Remote UI as a Web App (PWA)
+
+The remote UI page includes PWA metadata and can be installed to a home screen or desktop for a more app-like, fullscreen experience.
+
+### Before installing
+
+- Make sure the stream server is running and reachable on your local network.
+- Open: `http://<device-ip>:8081`
+- Rotate phones to landscape for best usability.
+
+### iPhone / iPad (Safari)
+
+1. Open `http://<device-ip>:8081` in Safari.
+2. Tap the Share button.
+3. Tap **Add to Home Screen**.
+4. Launch from the new home-screen icon.
+
+Notes:
+
+- Installing from the home screen gives the best fullscreen behavior.
+- If the UI appears stale after an update, close and reopen the app.
+
+### Android (Chrome / Samsung Internet / Other Chromium browsers)
+
+1. Open `http://<device-ip>:8081`.
+2. Open the browser menu.
+3. Tap **Install app** / **Add to Home screen** (varies by device/browser).
+4. Launch from the app drawer or home screen.
+
+### Desktop (Chrome / Edge)
+
+1. Open `http://<device-ip>:8081`.
+2. Click the install icon in the address bar, or open the browser menu and choose **Install** / **Apps**.
+3. Launch the installed app window from your OS app launcher.
+
+### macOS (Safari)
+
+1. Open `http://<device-ip>:8081` in Safari.
+2. Use **File** -> **Add to Dock**.
+3. Launch from Dock as a standalone web app.
+
+### Quick troubleshooting
+
+- No live updates (only first frame): restart the stream server and reopen the app.
+- Inputs work but video is frozen: close all open remote UI tabs/windows, then reconnect once.
+- Scale/layout looks wrong after rotation: rotate back, wait one second, then rotate again.
+
 ## Branch guidance
 
 Do **not** install the `ch-dev` branch; it is locked to a specific device. Any branch may be broken at any time. This project is primarily maintained for personal use, but feel free to use anything you find here however you see fit!
