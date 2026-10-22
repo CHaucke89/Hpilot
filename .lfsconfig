@@ -3,4 +3,4 @@
 	locksverify = false
 
 [remote "upstream"]
-	lfsurl = https://gitlab.com/sunnypilot/public/sunnypilot-new-lfs.git/info/lfs
+	lfsurl = https://huggingface.co/sunnypilot/sunnypilot-lfs.git/info/lfs
