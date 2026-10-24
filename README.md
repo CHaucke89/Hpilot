@@ -8,11 +8,9 @@ cloudypilot is a personal fork of [sunnypilot](https://github.com/sunnypilot/sun
 
 ## Safety first
 
-cloudypilot includes changes to safety-critical code, including steering-angle limits. These changes may be considered unsafe by comma.ai and could result in a device ban. Driver-monitoring and longitudinal-engagement safety code have not been intentionally weakened or removed.
+cloudypilot includes changes to safety-critical code, including steering-angle limits. While this does not explicitly break any of comma's rules, tread carefully if using this fork and uploading to comma connect. Driver-monitoring and longitudinal-engagement safety code have not been intentionally weakened or removed.
 
 This software operates a motor vehicle. Use it only if you understand the risks, follow all local laws, and can maintain constant attention and control. **Install and use cloudypilot entirely at your own risk.** It is alpha-quality research software, not a product, and comes with no warranty.
-
-If comma Connect is important to you, consider these risks carefully before installing. cloudypilot also includes an option to use the stable.konik.ai API instead of connect.comma.ai.
 
 ## Features and changes
 
@@ -30,7 +28,7 @@ If comma Connect is important to you, consider these risks carefully before inst
 - Add a **Soft Reboot** button to the Device panel and support `sudo systemctl restart comma` without triggering the hardware-reset prompt. Standard hardware reboot behavior is preserved.
 - Reset configurable options to their defaults by tapping the current value.
 - Show the active model, current branch, and Always Offroad Mode controls on the home screen.
-- Stream the live on-device UI to a web browser with the built-in Remote UI server.
+- Stream and interact with the device remotely the built-in Remote UI streamer (more info below).
 - Include additional user-interface changes.
 
 ## Remote UI Stream
@@ -89,7 +87,7 @@ Notes:
 
 ## Branch guidance
 
-Do **not** install the `ch-dev` branch; it is locked to a specific device. Any branch may be broken at any time. This project is primarily maintained for personal use, but feel free to use anything you find here however you see fit!
+Do **not** install the `ch-dev` branch; it will only run on one specific device. The `master` branch is the only branch that should be installed on a device or used for development. Alternatively, to speed up boot time considerably, the `master-prebuilt` branch is automatically built on every push to the master branch, so it is always up-to-date. The prebuilt branch should only be used for device installation as much of the source code is no longer present. This project is primarily maintained for personal use, but feel free to use anything you find here however you see fit!
 
 If you find a feature that would be useful upstream in sunnypilot, open an issue or reach out! A pull request can be made, if feasible.
 
