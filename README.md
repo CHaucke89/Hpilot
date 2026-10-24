@@ -1,3 +1,5 @@
+<img width="784" height="330" alt="cloudy_cropped" src="https://github.com/user-attachments/assets/d30bf073-b8f1-4ba7-bcc6-d2f457529b85" />
+
 # cloudypilot
 
 cloudypilot is a personal fork of [sunnypilot](https://github.com/sunnypilot/sunnypilot), itself a fork of [openpilot](https://github.com/commaai/openpilot). It is developed primarily for a 2026 Kia EV6 and is shared publicly as a free and open-source project.
