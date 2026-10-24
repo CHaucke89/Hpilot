@@ -135,7 +135,8 @@ jobs:
           export TMPDIR=${CI_ROOT}/tmp
           mkdir -p "$TMPDIR"
           # not the /usr/comma/shims/uv wrapper: it runs as root, remounts / rw, and swallows uv's exit code
-          /usr/bin/uv sync
+          # tools extra: SConstruct imports comma-deps-ncurses unconditionally
+          /usr/bin/uv sync --frozen --extra tools
           printenv >> $GITHUB_ENV
           echo "${UV_PROJECT_ENVIRONMENT}/bin" >> $GITHUB_PATH
 
