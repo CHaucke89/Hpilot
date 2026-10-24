@@ -102,7 +102,23 @@ jobs:
       needs.prepare_strategy.result == 'success' &&
       (needs.validate_tests.result == 'success' || needs.validate_tests.result == 'skipped')
       }}
+    env:
+      # /home is a tiny overlay on AGNOS, so keep the venv, python and cache on /data
+      CI_ROOT: /data/cloudypilot-ci
+      UV_PROJECT_ENVIRONMENT: /data/cloudypilot-ci/venv
+      VIRTUAL_ENV: /data/cloudypilot-ci/venv
+      UV_PYTHON_PREFERENCE: managed
+      UV_PYTHON_INSTALL_DIR: /data/cloudypilot-ci/uv/python
+      UV_CACHE_DIR: /data/cloudypilot-ci/uv/cache
     steps:
+      # anything run through AGNOS's root-owned uv/pip shims leaves root-owned files the runner can't clean or rewrite
+      - name: Reclaim workspace ownership
+        run: |
+          for d in "$GITHUB_WORKSPACE" "$CI_ROOT"; do
+            [ -d "$d" ] && sudo chown -R "$(id -u):$(id -g)" "$d"
+          done
+          true
+
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -114,14 +130,9 @@ jobs:
         run: |
           # Set up common environment
           source /etc/profile;
-          # /home is a tiny overlay on AGNOS, so keep the venv, python and cache on /data
-          CI_ROOT=/data/cloudypilot-ci
-          export UV_PROJECT_ENVIRONMENT=${CI_ROOT}/venv
-          export UV_PYTHON_PREFERENCE=managed
-          export UV_PYTHON_INSTALL_DIR=${CI_ROOT}/uv/python
-          export UV_CACHE_DIR=${CI_ROOT}/uv/cache
-          export TMPDIR=${CI_ROOT}/tmp
+          # profile points this at the system venv; printenv below would carry that into later steps
           export VIRTUAL_ENV=$UV_PROJECT_ENVIRONMENT
+          export TMPDIR=${CI_ROOT}/tmp
           mkdir -p "$TMPDIR"
           # not the /usr/comma/shims/uv wrapper: it runs as root, remounts / rw, and swallows uv's exit code
           /usr/bin/uv sync
@@ -201,6 +212,8 @@ jobs:
       - name: Re-enable powersave
         if: always()
         run: |
+          # powersave is only disabled after the venv exists, so nothing to undo without one
+          [ -f "${UV_PROJECT_ENVIRONMENT}/bin/activate" ] || exit 0
           source ${UV_PROJECT_ENVIRONMENT}/bin/activate
           PYTHONPATH=${{ github.workspace }}:$PYTHONPATH ${{ github.workspace }}/scripts/manage-powersave.py --enable
 
