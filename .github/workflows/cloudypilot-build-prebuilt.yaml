@@ -114,12 +114,19 @@ jobs:
         run: |
           # Set up common environment
           source /etc/profile;
-          export UV_PROJECT_ENVIRONMENT=${HOME}/venv
+          # /home is a tiny overlay on AGNOS, so keep the venv, python and cache on /data
+          CI_ROOT=/data/cloudypilot-ci
+          export UV_PROJECT_ENVIRONMENT=${CI_ROOT}/venv
           export UV_PYTHON_PREFERENCE=managed
-          export UV_PYTHON_INSTALL_DIR=${HOME}/uv/python
+          export UV_PYTHON_INSTALL_DIR=${CI_ROOT}/uv/python
+          export UV_CACHE_DIR=${CI_ROOT}/uv/cache
+          export TMPDIR=${CI_ROOT}/tmp
           export VIRTUAL_ENV=$UV_PROJECT_ENVIRONMENT
-          uv sync
+          mkdir -p "$TMPDIR"
+          # not the /usr/comma/shims/uv wrapper: it runs as root, remounts / rw, and swallows uv's exit code
+          /usr/bin/uv sync
           printenv >> $GITHUB_ENV
+          echo "${UV_PROJECT_ENVIRONMENT}/bin" >> $GITHUB_PATH
 
       - name: Setup build environment
         run: |
@@ -136,7 +143,7 @@ jobs:
             printenv
           fi
           source ${UV_PROJECT_ENVIRONMENT}/bin/activate
-          PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/ ${{ github.workspace }}/scripts/manage-powersave.py --disable
+          PYTHONPATH=${{ github.workspace }}:$PYTHONPATH ${{ github.workspace }}/scripts/manage-powersave.py --disable
 
       - name: Build Main Project
         run: |
@@ -195,7 +202,7 @@ jobs:
         if: always()
         run: |
           source ${UV_PROJECT_ENVIRONMENT}/bin/activate
-          PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/ ${{ github.workspace }}/scripts/manage-powersave.py --enable
+          PYTHONPATH=${{ github.workspace }}:$PYTHONPATH ${{ github.workspace }}/scripts/manage-powersave.py --enable
 
   publish:
     concurrency:
